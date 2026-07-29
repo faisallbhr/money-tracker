@@ -46,7 +46,7 @@ function openPicker() {
         "
       />
       <div
-        class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-left outline-none peer-focus:border-teal-700 peer-focus:ring-2 peer-focus:ring-teal-700/20"
+        class="flex min-h-11 w-full items-center rounded-xl border border-slate-200 bg-white px-3 pr-10 text-left outline-none peer-focus:border-teal-700 peer-focus:ring-2 peer-focus:ring-teal-700/20"
         :class="hasValue ? 'text-slate-900' : 'text-slate-400'"
       >
         {{ displayValue || 'Pilih tanggal & waktu' }}
