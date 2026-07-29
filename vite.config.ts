@@ -13,7 +13,7 @@ export default defineConfig({
       includeAssets: ['pwa-192.svg', 'pwa-512.svg'],
       manifest: {
         name: 'Money Tracker',
-        short_name: 'Finance',
+        short_name: 'Money Tracker',
         description: 'Offline-first Money Tracker',
         theme_color: '#0f766e',
         background_color: '#f8fafc',
