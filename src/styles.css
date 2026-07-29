@@ -70,3 +70,30 @@ textarea {
     @apply bg-teal-50 text-teal-800;
   }
 }
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.modal-enter-active .modal-sheet,
+.modal-leave-active .modal-sheet {
+  transition: transform 220ms ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-sheet,
+.modal-leave-to .modal-sheet {
+  transform: translateY(100%);
+}
+
+@media (min-width: 640px) {
+  .modal-enter-from .modal-sheet,
+  .modal-leave-to .modal-sheet {
+    transform: translateY(0.5rem) scale(0.98);
+  }
+}

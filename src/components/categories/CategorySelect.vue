@@ -11,6 +11,7 @@ const props = defineProps<{
   type: CategoryType
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const root = ref<HTMLElement | null>(null)
 const open = ref(false)
 const search = ref(props.modelValue)
 const categories = ref<Category[]>([])
@@ -51,19 +52,17 @@ function select(value: string) {
 
 function close() {
   open.value = false
-  window.removeEventListener('click', closeOnOutsideClick)
+  document.removeEventListener('pointerdown', closeOnOutsidePointerDown, true)
 }
 
-function closeOnOutsideClick(event: MouseEvent) {
-  if (!(event.target as HTMLElement).closest('[data-category-select]')) {
-    close()
-  }
+function closeOnOutsidePointerDown(event: PointerEvent) {
+  if (!root.value?.contains(event.target as Node)) close()
 }
 
 function openOptions() {
   open.value = true
   void load()
-  window.addEventListener('click', closeOnOutsideClick)
+  document.addEventListener('pointerdown', closeOnOutsidePointerDown, true)
 }
 
 function updateSearch(value: string) {
@@ -98,12 +97,14 @@ watch(
   },
 )
 
-onBeforeUnmount(() => window.removeEventListener('click', closeOnOutsideClick))
+onBeforeUnmount(close)
 </script>
 
 <template>
-  <div data-category-select class="relative grid w-full gap-1 text-sm">
-    <span class="font-medium text-slate-700">{{ label }}</span>
+  <div ref="root" class="relative grid w-full gap-1 text-sm">
+    <span class="font-medium text-slate-700" @pointerdown="close">{{
+      label
+    }}</span>
     <span class="relative">
       <input
         :value="search"

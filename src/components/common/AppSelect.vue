@@ -9,6 +9,7 @@ const props = defineProps<{
   options: readonly { label: string; value: string | number }[]
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string | number] }>()
+const root = ref<HTMLElement | null>(null)
 const open = ref(false)
 const selectedOption = computed(() =>
   props.options.find((item) => String(item.value) === String(props.modelValue)),
@@ -27,26 +28,28 @@ function select(value: string | number) {
 
 function close() {
   open.value = false
-  window.removeEventListener('click', closeOnOutsideClick)
+  document.removeEventListener('pointerdown', closeOnOutsidePointerDown, true)
 }
 
-function closeOnOutsideClick(event: MouseEvent) {
-  if (!(event.target as HTMLElement).closest('[data-app-select]')) {
-    close()
-  }
+function closeOnOutsidePointerDown(event: PointerEvent) {
+  if (!root.value?.contains(event.target as Node)) close()
 }
 
 function toggle() {
   open.value = !open.value
-  if (open.value) window.addEventListener('click', closeOnOutsideClick)
+  if (open.value)
+    document.addEventListener('pointerdown', closeOnOutsidePointerDown, true)
+  else close()
 }
 
-onBeforeUnmount(() => window.removeEventListener('click', closeOnOutsideClick))
+onBeforeUnmount(close)
 </script>
 
 <template>
-  <div data-app-select class="relative grid w-full gap-1 text-sm">
-    <span class="font-medium text-slate-700">{{ label }}</span>
+  <div ref="root" class="relative grid w-full gap-1 text-sm">
+    <span class="font-medium text-slate-700" @pointerdown="close">{{
+      label
+    }}</span>
     <span class="relative">
       <button
         type="button"

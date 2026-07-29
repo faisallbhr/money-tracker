@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { X } from 'lucide-vue-next'
-import { onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = defineProps<{ open: boolean; title: string }>()
 const emit = defineEmits<{ close: [] }>()
+const dragStartY = ref<number | null>(null)
+const dragOffsetY = ref(0)
 let previousBodyOverflow = ''
+const sheetStyle = computed(() => ({
+  transform: dragOffsetY.value ? `translateY(${dragOffsetY.value}px)` : '',
+}))
 
 function close() {
   emit('close')
@@ -18,10 +23,35 @@ function closeOnEscape(event: KeyboardEvent) {
   if (event.key === 'Escape' && props.open) close()
 }
 
+function stopDrag() {
+  window.removeEventListener('pointermove', drag)
+  window.removeEventListener('pointerup', endDrag)
+}
+
+function startDrag(event: PointerEvent) {
+  if (window.matchMedia('(min-width: 640px)').matches) return
+  dragStartY.value = event.clientY
+  window.addEventListener('pointermove', drag)
+  window.addEventListener('pointerup', endDrag)
+}
+
+function drag(event: PointerEvent) {
+  if (dragStartY.value === null) return
+  dragOffsetY.value = Math.max(0, event.clientY - dragStartY.value)
+}
+
+function endDrag() {
+  if (dragOffsetY.value > 80) close()
+  dragStartY.value = null
+  dragOffsetY.value = 0
+  stopDrag()
+}
+
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen) {
+      dragOffsetY.value = 0
       previousBodyOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
       window.addEventListener('keydown', closeOnEscape)
@@ -33,6 +63,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  stopDrag()
   if (props.open) unlockBodyScroll()
   window.removeEventListener('keydown', closeOnEscape)
 })
@@ -40,42 +71,52 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="open"
-      class="fixed inset-0 z-40 grid place-items-end bg-slate-950/40 p-0 sm:place-items-center sm:p-4"
-      @click.self="close"
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        :aria-label="title || 'Dialog'"
-        class="max-h-[92vh] w-full overflow-auto rounded-t-3xl bg-white p-4 shadow-xl sm:max-w-xl sm:rounded-3xl"
+    <Transition name="modal">
+      <div
+        v-if="open"
+        class="fixed inset-0 z-40 grid place-items-end bg-slate-950/40 p-0 sm:place-items-center sm:p-4"
+        @click.self="close"
       >
-        <header
-          v-if="title"
-          class="mb-4 flex items-center justify-between gap-3"
+        <section
+          role="dialog"
+          aria-modal="true"
+          :aria-label="title || 'Dialog'"
+          class="modal-sheet max-h-[92vh] w-full overflow-auto rounded-t-3xl bg-white p-4 shadow-xl sm:max-w-xl sm:rounded-3xl"
+          :style="sheetStyle"
         >
-          <h2 class="text-lg font-bold">{{ title }}</h2>
           <button
             type="button"
-            class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+            class="mx-auto mb-3 block h-1.5 w-12 rounded-full bg-slate-300 sm:hidden"
+            aria-label="Geser ke bawah untuk menutup"
+            @pointerdown="startDrag"
+          />
+          <header
+            v-if="title"
+            class="mb-4 flex items-center justify-between gap-3"
+          >
+            <h2 class="text-lg font-bold">{{ title }}</h2>
+            <button
+              type="button"
+              class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+              aria-label="Tutup"
+              @click="close"
+            >
+              <X :size="18" />
+            </button>
+          </header>
+          <button
+            v-else
+            type="button"
             aria-label="Tutup"
+            class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+            :class="{ 'float-right -mr-1 -mt-1': !title }"
             @click="close"
           >
             <X :size="18" />
           </button>
-        </header>
-        <button
-          v-else
-          type="button"
-          aria-label="Tutup"
-          class="float-right -mr-1 -mt-1 grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
-          @click="close"
-        >
-          <X :size="18" />
-        </button>
-        <slot />
-      </section>
-    </div>
+          <slot />
+        </section>
+      </div>
+    </Transition>
   </Teleport>
 </template>

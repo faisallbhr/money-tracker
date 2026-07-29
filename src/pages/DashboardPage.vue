@@ -85,12 +85,6 @@ const upcomingSchedules = computed(() =>
         >
           <Settings :size="18" />
         </RouterLink>
-        <RouterLink
-          to="/transactions"
-          class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-sm ring-1 ring-slate-100"
-        >
-          Lihat Semua
-        </RouterLink>
       </div>
     </div>
 
