@@ -6,7 +6,6 @@ import {
   Settings,
   TrendingDown,
   TrendingUp,
-  Wallet,
 } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 
@@ -113,7 +112,7 @@ const upcomingSchedules = computed(() =>
           </button>
         </div>
 
-        <div class="mt-5 grid grid-cols-3 gap-2">
+        <div class="mt-5 grid grid-cols-2 gap-2">
           <div class="min-w-0 rounded-2xl bg-white/12 p-3">
             <TrendingUp :size="17" class="mb-2" />
             <p class="text-[11px] text-teal-50">Pemasukan</p>
@@ -126,15 +125,6 @@ const upcomingSchedules = computed(() =>
             <p class="text-[11px] text-teal-50">Pengeluaran</p>
             <p class="truncate text-sm font-bold">
               {{ showBalance ? formatMoney(summary.expenseMinor) : 'Rp••••••' }}
-            </p>
-          </div>
-          <div class="min-w-0 rounded-2xl bg-white/12 p-3">
-            <Wallet :size="17" class="mb-2" />
-            <p class="text-[11px] leading-tight text-teal-50">
-              Pergerakan Saldo
-            </p>
-            <p class="truncate text-sm font-bold">
-              {{ showBalance ? formatMoney(summary.netMinor) : 'Rp••••••' }}
             </p>
           </div>
         </div>
