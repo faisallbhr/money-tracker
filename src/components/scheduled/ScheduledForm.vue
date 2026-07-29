@@ -6,7 +6,7 @@ import AppButton from '@/components/common/AppButton.vue'
 import AppDateTimeInput from '@/components/common/AppDateTimeInput.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
-import { nowDateTime } from '@/domain/date'
+import { nowDateTime, parseTransactionDateTimeInput } from '@/domain/date'
 import { parseMoneyToMinor } from '@/domain/money'
 import { listAccounts } from '@/repositories/accounts'
 import {
@@ -43,8 +43,12 @@ const form = reactive({
   frequency: props.schedule?.frequency || 'monthly',
   interval: props.schedule?.interval || 1,
   dayOfMonth: props.schedule?.dayOfMonth || new Date().getDate(),
-  startDate: props.schedule?.startDate || nowDateTime(),
-  endDate: props.schedule?.endDate || '',
+  startDate:
+    parseTransactionDateTimeInput(props.schedule?.startDate || '') ||
+    nowDateTime(),
+  endDate: props.schedule?.endDate
+    ? parseTransactionDateTimeInput(props.schedule.endDate) || ''
+    : '',
   behavior: (props.schedule?.behavior || 'confirmation') as ScheduledBehavior,
 })
 
@@ -91,8 +95,10 @@ async function submit() {
     frequency: form.frequency,
     interval: Number(form.interval),
     dayOfMonth: Number(form.dayOfMonth),
-    startDate: form.startDate,
-    endDate: form.endDate || undefined,
+    startDate: parseTransactionDateTimeInput(form.startDate) || form.startDate,
+    endDate: form.endDate
+      ? parseTransactionDateTimeInput(form.endDate) || form.endDate
+      : undefined,
     behavior: form.behavior,
   })
   if (!parsed.success) {

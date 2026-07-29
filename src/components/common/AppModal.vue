@@ -81,12 +81,12 @@ onBeforeUnmount(() => {
           role="dialog"
           aria-modal="true"
           :aria-label="title || 'Dialog'"
-          class="modal-sheet max-h-[92vh] w-full overflow-auto rounded-t-3xl bg-white px-4 pb-4 shadow-xl sm:max-w-xl sm:rounded-3xl sm:p-4"
+          class="modal-sheet flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-xl sm:max-w-xl sm:rounded-3xl"
           :style="sheetStyle"
         >
           <button
             type="button"
-            class="flex min-h-11 w-full touch-none items-center justify-center sm:hidden"
+            class="flex min-h-11 w-full shrink-0 touch-none items-center justify-center sm:hidden"
             aria-label="Geser ke bawah untuk menutup"
             @pointerdown="startDrag"
           >
@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
           </button>
           <header
             v-if="title"
-            class="mb-4 flex items-center justify-between gap-3"
+            class="mb-4 flex shrink-0 items-center justify-between gap-3 px-4 sm:pt-4"
           >
             <h2 class="text-lg font-bold">{{ title }}</h2>
             <button
@@ -110,13 +110,14 @@ onBeforeUnmount(() => {
             v-else
             type="button"
             aria-label="Tutup"
-            class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
-            :class="{ 'float-right -mr-1 -mt-1': !title }"
+            class="mx-4 mb-4 grid size-10 shrink-0 place-items-center self-end rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 sm:mt-4"
             @click="close"
           >
             <X :size="18" />
           </button>
-          <slot />
+          <div class="min-h-0 flex-1 overflow-auto px-4 pb-4">
+            <slot />
+          </div>
         </section>
       </div>
     </Transition>
