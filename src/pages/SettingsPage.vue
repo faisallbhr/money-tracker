@@ -44,7 +44,11 @@ async function resetData() {
 </script>
 
 <template>
-  <section v-if="settings.settings" class="grid gap-4">
+  <p v-if="settings.loading || !settings.settings" class="loading-state">
+    Memuat data...
+  </p>
+
+  <section v-else class="grid gap-4">
     <div>
       <p class="text-sm text-slate-500">Preferensi lokal aplikasi</p>
       <h2 class="text-2xl font-extrabold tracking-tight">Lainnya</h2>

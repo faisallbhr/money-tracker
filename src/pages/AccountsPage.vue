@@ -43,51 +43,56 @@ async function updated() {
       >
     </div>
 
-    <article
-      v-for="item in accountBalances"
-      :key="item.account.id"
-      class="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
-    >
-      <div class="flex items-center gap-3">
-        <RouterLink
-          :to="`/accounts/${item.account.id}`"
-          class="flex min-w-0 flex-1 items-center gap-3"
-        >
-          <span
-            class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700"
+    <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
+
+    <template v-else>
+      <article
+        v-for="item in accountBalances"
+        :key="item.account.id"
+        class="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
+      >
+        <div class="flex items-center gap-3">
+          <RouterLink
+            :to="`/accounts/${item.account.id}`"
+            class="flex min-w-0 flex-1 items-center gap-3"
           >
-            <WalletCards
-              v-if="
-                item.account.type === 'cash' || item.account.type === 'ewallet'
-              "
-              :size="18"
-            />
-            <Landmark v-else :size="18" />
-          </span>
-          <div class="min-w-0">
-            <h3 class="truncate font-bold">{{ item.account.name }}</h3>
-            <p class="text-sm text-slate-500">
-              {{ accountTypeLabel(item.account.type) }}
-            </p>
-          </div>
-        </RouterLink>
-        <div class="text-right">
-          <p class="font-extrabold">{{ formatMoney(item.balanceMinor) }}</p>
-          <div class="mt-1 flex justify-end gap-2">
-            <AppButton
-              variant="ghost"
-              aria-label="Edit akun"
-              @click="editingAccount = item.account"
-              ><Pencil :size="16"
-            /></AppButton>
+            <span
+              class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700"
+            >
+              <WalletCards
+                v-if="
+                  item.account.type === 'cash' ||
+                  item.account.type === 'ewallet'
+                "
+                :size="18"
+              />
+              <Landmark v-else :size="18" />
+            </span>
+            <div class="min-w-0">
+              <h3 class="truncate font-bold">{{ item.account.name }}</h3>
+              <p class="text-sm text-slate-500">
+                {{ accountTypeLabel(item.account.type) }}
+              </p>
+            </div>
+          </RouterLink>
+          <div class="text-right">
+            <p class="font-extrabold">{{ formatMoney(item.balanceMinor) }}</p>
+            <div class="mt-1 flex justify-end gap-2">
+              <AppButton
+                variant="ghost"
+                aria-label="Edit akun"
+                @click="editingAccount = item.account"
+                ><Pencil :size="16"
+              /></AppButton>
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
 
-    <p v-if="!data.accounts.value.length" class="empty-state">
-      Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.
-    </p>
+      <p v-if="!data.accounts.value.length" class="empty-state">
+        Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.
+      </p>
+    </template>
 
     <AppModal
       :open="showCreate"

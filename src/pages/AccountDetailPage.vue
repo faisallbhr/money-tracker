@@ -25,15 +25,16 @@ const balance = computed(() =>
 
 <template>
   <section class="grid gap-4">
+    <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
     <div
-      v-if="account"
+      v-else-if="account"
       class="rounded-2xl bg-gradient-to-br from-teal-700 to-emerald-500 p-4 text-white shadow-md shadow-teal-700/20"
     >
       <p class="text-sm text-teal-50">{{ accountTypeLabel(account.type) }}</p>
       <h2 class="mt-1 text-xl font-extrabold">{{ account.name }}</h2>
       <p class="mt-3 text-2xl font-extrabold">{{ formatMoney(balance) }}</p>
     </div>
-    <section class="soft-card">
+    <section v-if="!data.loading.value" class="soft-card">
       <h3 class="mb-3 section-title">Riwayat Transaksi</h3>
       <TransactionListItem
         v-for="transaction in data.transactions.value"

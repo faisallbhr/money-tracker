@@ -139,68 +139,72 @@ async function submit() {
 
 <template>
   <form class="grid gap-5" @submit.prevent="submit">
-    <div>
-      <p class="text-sm text-slate-500">{{ title }}</p>
+    <p v-if="loading" class="loading-state">Memuat data...</p>
+
+    <template v-else>
+      <div>
+        <p class="text-sm text-slate-500">{{ title }}</p>
+        <AppInput
+          v-model="form.amount"
+          label="Nominal"
+          inputmode="numeric"
+          :error="errors.amountMinor"
+        />
+      </div>
+
+      <div v-if="type === 'transfer'" class="grid gap-4">
+        <AppSelect
+          v-model="form.fromAccountId"
+          label="Dari Akun"
+          :options="accountOptions"
+          :error="errors.fromAccountId"
+        />
+        <AppSelect
+          v-model="form.toAccountId"
+          label="Ke Akun"
+          :options="accountOptions"
+          :error="errors.toAccountId"
+        />
+      </div>
+      <AppSelect
+        v-else
+        v-model="form.accountId"
+        label="Akun"
+        :options="accountOptions"
+        :error="errors.accountId"
+      />
+
+      <AppSelect
+        v-if="type === 'adjustment'"
+        v-model="form.adjustmentDirection"
+        label="Arah Penyesuaian"
+        :options="[
+          { label: 'Tambah Saldo', value: 'increase' },
+          { label: 'Kurangi Saldo', value: 'decrease' },
+        ]"
+        :error="errors.adjustmentDirection"
+      />
       <AppInput
-        v-model="form.amount"
-        label="Nominal"
-        inputmode="numeric"
-        :error="errors.amountMinor"
+        v-if="type === 'income' || type === 'expense'"
+        v-model="form.categoryName"
+        label="Kategori"
+        :list="categoryInputId"
       />
-    </div>
-
-    <div v-if="type === 'transfer'" class="grid gap-4">
-      <AppSelect
-        v-model="form.fromAccountId"
-        label="Dari Akun"
-        :options="accountOptions"
-        :error="errors.fromAccountId"
+      <datalist :id="categoryInputId">
+        <option
+          v-for="category in categorySuggestions"
+          :key="category.id"
+          :value="category.name"
+        />
+      </datalist>
+      <AppInput
+        v-model="form.transactionDate"
+        label="Tanggal"
+        type="date"
+        :error="errors.transactionDate"
       />
-      <AppSelect
-        v-model="form.toAccountId"
-        label="Ke Akun"
-        :options="accountOptions"
-        :error="errors.toAccountId"
-      />
-    </div>
-    <AppSelect
-      v-else
-      v-model="form.accountId"
-      label="Akun"
-      :options="accountOptions"
-      :error="errors.accountId"
-    />
-
-    <AppSelect
-      v-if="type === 'adjustment'"
-      v-model="form.adjustmentDirection"
-      label="Arah Penyesuaian"
-      :options="[
-        { label: 'Tambah Saldo', value: 'increase' },
-        { label: 'Kurangi Saldo', value: 'decrease' },
-      ]"
-      :error="errors.adjustmentDirection"
-    />
-    <AppInput
-      v-if="type === 'income' || type === 'expense'"
-      v-model="form.categoryName"
-      label="Kategori"
-      :list="categoryInputId"
-    />
-    <datalist :id="categoryInputId">
-      <option
-        v-for="category in categorySuggestions"
-        :key="category.id"
-        :value="category.name"
-      />
-    </datalist>
-    <AppInput
-      v-model="form.transactionDate"
-      label="Tanggal"
-      type="date"
-      :error="errors.transactionDate"
-    />
-    <AppInput v-model="form.note" label="Catatan" />
+      <AppInput v-model="form.note" label="Catatan" />
+    </template>
 
     <div class="sticky bottom-0 -mx-4 bg-white p-4 sm:static sm:mx-0 sm:p-0">
       <AppButton type="submit" class="w-full" :disabled="loading || saving">

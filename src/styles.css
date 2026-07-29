@@ -62,6 +62,10 @@ textarea {
     @apply rounded-2xl bg-slate-50 p-5 text-sm text-slate-500;
   }
 
+  .loading-state {
+    @apply rounded-2xl bg-white p-4 text-sm text-slate-500 shadow-sm ring-1 ring-slate-100;
+  }
+
   .mobile-nav-item {
     @apply flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium text-slate-500 transition active:scale-[0.98];
   }

@@ -89,74 +89,82 @@ const upcomingSchedules = computed(() =>
       </div>
     </div>
 
-    <section
-      class="overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 via-teal-600 to-emerald-500 p-5 text-white shadow-lg shadow-teal-700/20"
-    >
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-sm text-teal-50">Total Saldo</p>
-          <p class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            {{ showBalance ? formatMoney(totalBalance) : 'Rp••••••' }}
-          </p>
-        </div>
-        <button
-          type="button"
-          class="grid size-11 place-items-center rounded-full bg-white/15 focus:outline-none focus:ring-2 focus:ring-white"
-          :aria-label="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'"
-          @click="showBalance = !showBalance"
-        >
-          <EyeOff v-if="showBalance" :size="20" />
-          <Eye v-else :size="20" />
-        </button>
-      </div>
+    <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
 
-      <div class="mt-5 grid grid-cols-3 gap-2">
-        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
-          <TrendingUp :size="17" class="mb-2" />
-          <p class="text-[11px] text-teal-50">Pemasukan</p>
-          <p class="truncate text-sm font-bold">
-            {{ showBalance ? formatMoney(summary.incomeMinor) : 'Rp••••••' }}
-          </p>
+    <template v-else>
+      <section
+        class="overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 via-teal-600 to-emerald-500 p-5 text-white shadow-lg shadow-teal-700/20"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm text-teal-50">Total Saldo</p>
+            <p class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              {{ showBalance ? formatMoney(totalBalance) : 'Rp••••••' }}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="grid size-11 place-items-center rounded-full bg-white/15 focus:outline-none focus:ring-2 focus:ring-white"
+            :aria-label="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'"
+            @click="showBalance = !showBalance"
+          >
+            <EyeOff v-if="showBalance" :size="20" />
+            <Eye v-else :size="20" />
+          </button>
         </div>
-        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
-          <TrendingDown :size="17" class="mb-2" />
-          <p class="text-[11px] text-teal-50">Pengeluaran</p>
-          <p class="truncate text-sm font-bold">
-            {{ showBalance ? formatMoney(summary.expenseMinor) : 'Rp••••••' }}
-          </p>
+
+        <div class="mt-5 grid grid-cols-3 gap-2">
+          <div class="min-w-0 rounded-2xl bg-white/12 p-3">
+            <TrendingUp :size="17" class="mb-2" />
+            <p class="text-[11px] text-teal-50">Pemasukan</p>
+            <p class="truncate text-sm font-bold">
+              {{ showBalance ? formatMoney(summary.incomeMinor) : 'Rp••••••' }}
+            </p>
+          </div>
+          <div class="min-w-0 rounded-2xl bg-white/12 p-3">
+            <TrendingDown :size="17" class="mb-2" />
+            <p class="text-[11px] text-teal-50">Pengeluaran</p>
+            <p class="truncate text-sm font-bold">
+              {{ showBalance ? formatMoney(summary.expenseMinor) : 'Rp••••••' }}
+            </p>
+          </div>
+          <div class="min-w-0 rounded-2xl bg-white/12 p-3">
+            <Wallet :size="17" class="mb-2" />
+            <p class="text-[11px] leading-tight text-teal-50">
+              Pergerakan Saldo
+            </p>
+            <p class="truncate text-sm font-bold">
+              {{ showBalance ? formatMoney(summary.netMinor) : 'Rp••••••' }}
+            </p>
+          </div>
         </div>
-        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
-          <Wallet :size="17" class="mb-2" />
-          <p class="text-[11px] leading-tight text-teal-50">Pergerakan Saldo</p>
-          <p class="truncate text-sm font-bold">
-            {{ showBalance ? formatMoney(summary.netMinor) : 'Rp••••••' }}
-          </p>
+      </section>
+
+      <CashFlowChart :series="cashFlowSeries" />
+      <ExpenseCategoryBreakdown :items="expenseCategories" />
+
+      <section class="soft-card">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="section-title">Transaksi Terbaru</h2>
+          <RouterLink
+            to="/transactions"
+            class="text-sm font-medium text-teal-700"
+            >Lihat Semua</RouterLink
+          >
         </div>
-      </div>
-    </section>
+        <TransactionListItem
+          v-for="transaction in recentTransactions"
+          :key="transaction.id"
+          :transaction="transaction"
+          :accounts="data.accounts.value"
+          :categories="data.categories.value"
+        />
+        <p v-if="!recentTransactions.length" class="empty-state">
+          Belum ada transaksi.
+        </p>
+      </section>
 
-    <CashFlowChart :series="cashFlowSeries" />
-    <ExpenseCategoryBreakdown :items="expenseCategories" />
-
-    <section class="soft-card">
-      <div class="mb-3 flex items-center justify-between">
-        <h2 class="section-title">Transaksi Terbaru</h2>
-        <RouterLink to="/transactions" class="text-sm font-medium text-teal-700"
-          >Lihat Semua</RouterLink
-        >
-      </div>
-      <TransactionListItem
-        v-for="transaction in recentTransactions"
-        :key="transaction.id"
-        :transaction="transaction"
-        :accounts="data.accounts.value"
-        :categories="data.categories.value"
-      />
-      <p v-if="!recentTransactions.length" class="empty-state">
-        Belum ada transaksi.
-      </p>
-    </section>
-
-    <UpcomingScheduledList :schedules="upcomingSchedules" />
+      <UpcomingScheduledList :schedules="upcomingSchedules" />
+    </template>
   </section>
 </template>

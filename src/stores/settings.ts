@@ -6,10 +6,16 @@ import type { Settings } from '@/types/models'
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     settings: null as Settings | null,
+    loading: false,
   }),
   actions: {
     async load() {
-      this.settings = await getSettings()
+      this.loading = true
+      try {
+        this.settings = await getSettings()
+      } finally {
+        this.loading = false
+      }
     },
     async save(settings: Settings) {
       await saveSettings(settings)

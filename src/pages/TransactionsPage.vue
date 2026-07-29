@@ -66,14 +66,20 @@ onMounted(load)
     />
 
     <section class="soft-card">
-      <TransactionListItem
-        v-for="transaction in data.transactions.value"
-        :key="transaction.id"
-        :transaction="transaction"
-        :accounts="data.accounts.value"
-        :categories="data.categories.value"
-      />
-      <p v-if="!data.transactions.value.length" class="empty-state">
+      <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
+      <template v-else>
+        <TransactionListItem
+          v-for="transaction in data.transactions.value"
+          :key="transaction.id"
+          :transaction="transaction"
+          :accounts="data.accounts.value"
+          :categories="data.categories.value"
+        />
+      </template>
+      <p
+        v-if="!data.loading.value && !data.transactions.value.length"
+        class="empty-state"
+      >
         Tidak ada transaksi yang cocok.
       </p>
     </section>
@@ -117,7 +123,9 @@ onMounted(load)
             type="date"
           />
         </div>
-        <AppButton type="submit">Terapkan Filter</AppButton>
+        <AppButton type="submit" :disabled="data.loading.value">
+          {{ data.loading.value ? 'Memuat...' : 'Terapkan Filter' }}
+        </AppButton>
       </form>
     </AppModal>
   </section>
