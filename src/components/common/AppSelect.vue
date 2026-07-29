@@ -14,11 +14,11 @@ function updateValue(value: string) {
 </script>
 
 <template>
-  <label class="grid gap-1 text-sm">
+  <label class="grid w-full gap-1 text-sm">
     <span class="font-medium text-slate-700">{{ label }}</span>
     <select
       :value="modelValue"
-      class="min-h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+      class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
       @change="updateValue(($event.target as HTMLSelectElement).value)"
     >
       <option

@@ -175,6 +175,7 @@ async function submit() {
         v-model="form.amount"
         label="Nominal"
         inputmode="numeric"
+        format="money"
         :error="errors.amountMinor"
       />
       <div class="grid gap-4 sm:grid-cols-2">

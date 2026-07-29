@@ -33,13 +33,6 @@ const form = reactive({
   transactionDate: todayDate(),
 })
 
-const title = computed(() => {
-  if (props.type === 'income') return 'Tambah Pemasukan'
-  if (props.type === 'expense') return 'Tambah Pengeluaran'
-  if (props.type === 'transfer') return 'Transfer'
-  return 'Penyesuaian Saldo'
-})
-
 const accountOptions = computed(() => [
   { label: 'Pilih Akun', value: '' },
   ...accounts.value.map((account) => ({
@@ -143,11 +136,11 @@ async function submit() {
 
     <template v-else>
       <div>
-        <p class="text-sm text-slate-500">{{ title }}</p>
         <AppInput
           v-model="form.amount"
           label="Nominal"
           inputmode="numeric"
+          format="money"
           :error="errors.amountMinor"
         />
       </div>

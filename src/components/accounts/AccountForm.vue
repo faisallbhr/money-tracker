@@ -73,6 +73,7 @@ async function submit() {
       v-model="form.initialBalance"
       label="Saldo Awal"
       inputmode="numeric"
+      format="money"
       :error="errors.initialBalanceMinor"
     />
     <AppButton type="submit" :disabled="saving">

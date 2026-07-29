@@ -2,13 +2,16 @@
 import { X } from 'lucide-vue-next'
 import { onBeforeUnmount, watch } from 'vue'
 
-import AppButton from './AppButton.vue'
-
 const props = defineProps<{ open: boolean; title: string }>()
 const emit = defineEmits<{ close: [] }>()
+let previousBodyOverflow = ''
 
 function close() {
   emit('close')
+}
+
+function unlockBodyScroll() {
+  document.body.style.overflow = previousBodyOverflow
 }
 
 function closeOnEscape(event: KeyboardEvent) {
@@ -18,12 +21,21 @@ function closeOnEscape(event: KeyboardEvent) {
 watch(
   () => props.open,
   (isOpen) => {
-    if (isOpen) window.addEventListener('keydown', closeOnEscape)
-    else window.removeEventListener('keydown', closeOnEscape)
+    if (isOpen) {
+      previousBodyOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', closeOnEscape)
+      return
+    }
+    unlockBodyScroll()
+    window.removeEventListener('keydown', closeOnEscape)
   },
 )
 
-onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
+onBeforeUnmount(() => {
+  if (props.open) unlockBodyScroll()
+  window.removeEventListener('keydown', closeOnEscape)
+})
 </script>
 
 <template>
@@ -44,19 +56,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
           class="mb-4 flex items-center justify-between gap-3"
         >
           <h2 class="text-lg font-bold">{{ title }}</h2>
-          <AppButton variant="ghost" aria-label="Tutup" @click="close">
+          <button
+            type="button"
+            class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+            aria-label="Tutup"
+            @click="close"
+          >
             <X :size="18" />
-          </AppButton>
+          </button>
         </header>
-        <AppButton
+        <button
           v-else
-          variant="ghost"
+          type="button"
           aria-label="Tutup"
-          class="float-right -mr-1 -mt-1"
+          class="float-right -mr-1 -mt-1 grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
           @click="close"
         >
           <X :size="18" />
-        </AppButton>
+        </button>
         <slot />
       </section>
     </div>

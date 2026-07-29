@@ -7,7 +7,7 @@ import {
   ReceiptText,
 } from 'lucide-vue-next'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 import AppButton from '@/components/common/AppButton.vue'
@@ -24,6 +24,12 @@ const route = useRoute()
 const showAddMenu = ref(false)
 const addType = ref<'income' | 'expense' | 'transfer' | null>(null)
 const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
+const addModalTitle = computed(() => {
+  if (addType.value === 'expense') return 'Tambah Pengeluaran'
+  if (addType.value === 'income') return 'Tambah Pemasukan'
+  if (addType.value === 'transfer') return 'Transfer'
+  return 'Tambah Transaksi'
+})
 
 const navItems = [
   { to: '/', label: 'Beranda', icon: Home },
@@ -92,7 +98,7 @@ function isNavActive(to: string) {
 
         <button
           type="button"
-          class="-mt-7 flex min-h-[72px] flex-col items-center justify-start gap-1 text-xs font-semibold text-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+          class="-mt-7 flex min-h-16 items-start justify-center focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
           aria-label="Tambah Transaksi"
           @click="showAddMenu = true"
         >
@@ -101,7 +107,6 @@ function isNavActive(to: string) {
           >
             <Plus :size="26" />
           </span>
-          Tambah
         </button>
 
         <RouterLink
@@ -118,11 +123,7 @@ function isNavActive(to: string) {
       </div>
     </nav>
 
-    <AppModal
-      :open="showAddMenu"
-      :title="addType ? '' : 'Tambah Transaksi'"
-      @close="closeAddMenu"
-    >
+    <AppModal :open="showAddMenu" :title="addModalTitle" @close="closeAddMenu">
       <div v-if="!addType" class="grid gap-3">
         <AppButton @click="addType = 'expense'">Tambah Pengeluaran</AppButton>
         <AppButton variant="secondary" @click="addType = 'income'"

@@ -12,6 +12,7 @@ import {
   getDueOccurrenceDates,
   missingOccurrenceDates,
 } from '@/domain/scheduling/scheduling'
+import { formatMoneyInput, parseMoneyToMinor } from '@/domain/money'
 import {
   withNetCashFlow,
   summarizeIncomeExpense,
@@ -108,6 +109,13 @@ describe('balance rules', () => {
     expect(calculateAccountBalance(bank, transactions)).toBe(1_175_00)
     expect(calculateAccountBalance(cash, transactions)).toBe(275_00)
     expect(calculateTotalBalance([bank, cash], transactions)).toBe(1_450_00)
+  })
+})
+
+describe('money input formatting', () => {
+  it('formats and parses Indonesian thousands separators', () => {
+    expect(formatMoneyInput('10000')).toBe('10.000')
+    expect(parseMoneyToMinor('10.000')).toBe(1_000_000)
   })
 })
 
