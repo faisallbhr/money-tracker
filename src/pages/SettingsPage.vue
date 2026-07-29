@@ -13,21 +13,33 @@ import { useToastStore } from '@/stores/toast'
 const settings = useSettingsStore()
 const toast = useToastStore()
 const confirmReset = ref('')
+const saving = ref(false)
+const resetting = ref(false)
 
 onMounted(() => settings.load())
 
 async function save() {
-  if (!settings.settings) return
-  await settings.save(settings.settings)
-  toast.show('Pengaturan tersimpan.', 'success')
+  if (!settings.settings || saving.value) return
+  saving.value = true
+  try {
+    await settings.save(settings.settings)
+    toast.show('Pengaturan tersimpan.', 'success')
+  } finally {
+    saving.value = false
+  }
 }
 
 async function resetData() {
-  if (confirmReset.value !== 'RESET') return
-  await resetAllData()
-  await seedDefaults()
-  confirmReset.value = ''
-  toast.show('Semua data sudah direset.', 'success')
+  if (confirmReset.value !== 'RESET' || resetting.value) return
+  resetting.value = true
+  try {
+    await resetAllData()
+    await seedDefaults()
+    confirmReset.value = ''
+    toast.show('Semua data sudah direset.', 'success')
+  } finally {
+    resetting.value = false
+  }
 }
 </script>
 
@@ -39,7 +51,7 @@ async function resetData() {
     </div>
 
     <p
-      class="rounded-3xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-100"
+      class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-100"
     >
       Data tersimpan hanya di browser ini dan dapat hilang jika data situs
       dibersihkan.
@@ -62,7 +74,9 @@ async function resetData() {
           { label: 'Konfirmasi', value: 'confirmation' },
         ]"
       />
-      <AppButton type="submit">Simpan</AppButton>
+      <AppButton type="submit" :disabled="saving">
+        {{ saving ? 'Menyimpan...' : 'Simpan' }}
+      </AppButton>
     </form>
 
     <section class="soft-card">
@@ -76,9 +90,9 @@ async function resetData() {
         <AppButton
           variant="danger"
           class="sm:mt-6 sm:h-11"
-          :disabled="confirmReset !== 'RESET'"
+          :disabled="confirmReset !== 'RESET' || resetting"
           @click="resetData"
-          >Reset</AppButton
+          >{{ resetting ? 'Mereset...' : 'Reset' }}</AppButton
         >
       </div>
     </section>

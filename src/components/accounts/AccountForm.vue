@@ -14,6 +14,7 @@ const props = defineProps<{ account?: Account }>()
 const emit = defineEmits<{ saved: [] }>()
 const toast = useToastStore()
 const errors = ref<Record<string, string>>({})
+const saving = ref(false)
 const form = reactive({
   name: props.account?.name || '',
   type: props.account?.type || 'bank',
@@ -23,6 +24,7 @@ const form = reactive({
 })
 
 async function submit() {
+  if (saving.value) return
   errors.value = {}
   const parsed = accountSchema.safeParse({
     name: form.name,
@@ -38,6 +40,7 @@ async function submit() {
     )
     return
   }
+  saving.value = true
   try {
     await saveAccount({ ...parsed.data, id: props.account?.id })
     toast.show('Akun tersimpan.', 'success')
@@ -45,6 +48,8 @@ async function submit() {
   } catch (error) {
     console.error(error)
     toast.show('Gagal menyimpan akun.', 'error')
+  } finally {
+    saving.value = false
   }
 }
 </script>
@@ -70,6 +75,8 @@ async function submit() {
       inputmode="numeric"
       :error="errors.initialBalanceMinor"
     />
-    <AppButton type="submit">Simpan Akun</AppButton>
+    <AppButton type="submit" :disabled="saving">
+      {{ saving ? 'Menyimpan...' : 'Simpan Akun' }}
+    </AppButton>
   </form>
 </template>

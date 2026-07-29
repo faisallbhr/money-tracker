@@ -20,6 +20,8 @@ const toast = useToastStore()
 const accounts = ref<Account[]>([])
 const categories = ref<Category[]>([])
 const errors = ref<Record<string, string>>({})
+const loading = ref(true)
+const saving = ref(false)
 const form = reactive({
   accountId: '',
   fromAccountId: '',
@@ -51,33 +53,38 @@ const categorySuggestions = computed(() =>
 const categoryInputId = computed(() => `category-options-${props.type}`)
 
 onMounted(async () => {
-  const [nextAccounts, nextCategories] = await Promise.all([
-    listAccounts(),
-    listCategories(),
-  ])
-  accounts.value = nextAccounts
-  categories.value = nextCategories
+  try {
+    const [nextAccounts, nextCategories] = await Promise.all([
+      listAccounts(),
+      listCategories(),
+    ])
+    accounts.value = nextAccounts
+    categories.value = nextCategories
 
-  const [lastTransaction] = await listTransactions({
-    type: props.type,
-    limit: 1,
-  })
-  if (!lastTransaction) return
+    const [lastTransaction] = await listTransactions({
+      type: props.type,
+      limit: 1,
+    })
+    if (!lastTransaction) return
 
-  form.accountId = lastTransaction.accountId || ''
-  form.fromAccountId = lastTransaction.fromAccountId || ''
-  form.toAccountId = lastTransaction.toAccountId || ''
-  form.amount = String(lastTransaction.amountMinor / 100)
-  form.note = lastTransaction.note || ''
-  form.adjustmentDirection =
-    lastTransaction.adjustmentDirection || form.adjustmentDirection
-  form.categoryName =
-    categories.value.find(
-      (category) => category.id === lastTransaction.categoryId,
-    )?.name || ''
+    form.accountId = lastTransaction.accountId || ''
+    form.fromAccountId = lastTransaction.fromAccountId || ''
+    form.toAccountId = lastTransaction.toAccountId || ''
+    form.amount = String(lastTransaction.amountMinor / 100)
+    form.note = lastTransaction.note || ''
+    form.adjustmentDirection =
+      lastTransaction.adjustmentDirection || form.adjustmentDirection
+    form.categoryName =
+      categories.value.find(
+        (category) => category.id === lastTransaction.categoryId,
+      )?.name || ''
+  } finally {
+    loading.value = false
+  }
 })
 
 async function submit() {
+  if (loading.value || saving.value) return
   errors.value = {}
   const categoryName = form.categoryName.trim()
   const parsed = transactionFormSchema.safeParse({
@@ -102,6 +109,7 @@ async function submit() {
     return
   }
 
+  saving.value = true
   try {
     const existingCategory = categories.value.find(
       (category) =>
@@ -123,6 +131,8 @@ async function submit() {
       error instanceof Error ? error.message : 'Gagal menyimpan transaksi.',
       'error',
     )
+  } finally {
+    saving.value = false
   }
 }
 </script>
@@ -193,7 +203,9 @@ async function submit() {
     <AppInput v-model="form.note" label="Catatan" />
 
     <div class="sticky bottom-0 -mx-4 bg-white p-4 sm:static sm:mx-0 sm:p-0">
-      <AppButton type="submit" class="w-full">Simpan</AppButton>
+      <AppButton type="submit" class="w-full" :disabled="loading || saving">
+        {{ saving ? 'Menyimpan...' : 'Simpan' }}
+      </AppButton>
     </div>
   </form>
 </template>

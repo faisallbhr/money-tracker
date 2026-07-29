@@ -25,6 +25,8 @@ const toast = useToastStore()
 const accounts = ref<Account[]>([])
 const categories = ref<Category[]>([])
 const errors = ref<Record<string, string>>({})
+const loading = ref(true)
+const saving = ref(false)
 const form = reactive({
   name: props.schedule?.name || '',
   type: props.schedule?.type || 'expense',
@@ -57,22 +59,27 @@ const categoryInputId = computed(
 )
 
 onMounted(async () => {
-  const [nextAccounts, nextCategories, settings] = await Promise.all([
-    listAccounts(),
-    listCategories(),
-    getSettings(),
-  ])
-  accounts.value = nextAccounts
-  categories.value = nextCategories
-  form.behavior =
-    props.schedule?.behavior || settings.scheduledTransactionDefaultBehavior
-  form.categoryName =
-    nextCategories.find(
-      (category) => category.id === props.schedule?.categoryId,
-    )?.name || ''
+  try {
+    const [nextAccounts, nextCategories, settings] = await Promise.all([
+      listAccounts(),
+      listCategories(),
+      getSettings(),
+    ])
+    accounts.value = nextAccounts
+    categories.value = nextCategories
+    form.behavior =
+      props.schedule?.behavior || settings.scheduledTransactionDefaultBehavior
+    form.categoryName =
+      nextCategories.find(
+        (category) => category.id === props.schedule?.categoryId,
+      )?.name || ''
+  } finally {
+    loading.value = false
+  }
 })
 
 async function submit() {
+  if (loading.value || saving.value) return
   errors.value = {}
   const categoryName = form.categoryName.trim()
   const parsed = scheduledTransactionSchema.safeParse({
@@ -99,6 +106,7 @@ async function submit() {
     )
     return
   }
+  saving.value = true
   try {
     const existingCategory = categories.value.find(
       (category) =>
@@ -121,6 +129,8 @@ async function submit() {
   } catch (error) {
     console.error(error)
     toast.show('Gagal menyimpan Transaksi Terjadwal.', 'error')
+  } finally {
+    saving.value = false
   }
 }
 </script>
@@ -203,6 +213,8 @@ async function submit() {
       />
     </datalist>
     <AppInput v-model="form.note" label="Catatan" />
-    <AppButton type="submit">Simpan</AppButton>
+    <AppButton type="submit" :disabled="loading || saving">
+      {{ saving ? 'Menyimpan...' : 'Simpan' }}
+    </AppButton>
   </form>
 </template>

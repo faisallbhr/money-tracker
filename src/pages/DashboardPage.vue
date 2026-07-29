@@ -10,16 +10,12 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 
-import AccountBalanceStrip from '@/components/dashboard/AccountBalanceStrip.vue'
 import CashFlowChart from '@/components/dashboard/CashFlowChart.vue'
 import ExpenseCategoryBreakdown from '@/components/dashboard/ExpenseCategoryBreakdown.vue'
 import UpcomingScheduledList from '@/components/dashboard/UpcomingScheduledList.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
-import {
-  calculateAccountBalances,
-  calculateTotalBalance,
-} from '@/domain/balance/balance'
+import { calculateTotalBalance } from '@/domain/balance/balance'
 import { formatMonthIndonesia } from '@/domain/date'
 import {
   getMonthlyCashFlowSeries,
@@ -40,12 +36,6 @@ const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
 onMounted(() => data.load())
 
-const accountBalances = computed(() =>
-  calculateAccountBalances(data.accounts.value, data.transactions.value).slice(
-    0,
-    dashboardLimit,
-  ),
-)
 const totalBalance = computed(() =>
   calculateTotalBalance(data.accounts.value, data.transactions.value),
 )
@@ -100,7 +90,7 @@ const upcomingSchedules = computed(() =>
     </div>
 
     <section
-      class="overflow-hidden rounded-[2rem] bg-gradient-to-br from-teal-700 via-teal-600 to-emerald-500 p-5 text-white shadow-lg shadow-teal-700/20"
+      class="overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 via-teal-600 to-emerald-500 p-5 text-white shadow-lg shadow-teal-700/20"
     >
       <div class="flex items-start justify-between gap-4">
         <div>
@@ -121,32 +111,31 @@ const upcomingSchedules = computed(() =>
       </div>
 
       <div class="mt-5 grid grid-cols-3 gap-2">
-        <div class="rounded-2xl bg-white/12 p-3">
+        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
           <TrendingUp :size="17" class="mb-2" />
           <p class="text-[11px] text-teal-50">Pemasukan</p>
           <p class="truncate text-sm font-bold">
-            {{ formatMoney(summary.incomeMinor) }}
+            {{ showBalance ? formatMoney(summary.incomeMinor) : 'Rp••••••' }}
           </p>
         </div>
-        <div class="rounded-2xl bg-white/12 p-3">
+        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
           <TrendingDown :size="17" class="mb-2" />
           <p class="text-[11px] text-teal-50">Pengeluaran</p>
           <p class="truncate text-sm font-bold">
-            {{ formatMoney(summary.expenseMinor) }}
+            {{ showBalance ? formatMoney(summary.expenseMinor) : 'Rp••••••' }}
           </p>
         </div>
-        <div class="rounded-2xl bg-white/12 p-3">
+        <div class="min-w-0 rounded-2xl bg-white/12 p-3">
           <Wallet :size="17" class="mb-2" />
-          <p class="text-[11px] text-teal-50">Pergerakan Saldo</p>
+          <p class="text-[11px] leading-tight text-teal-50">Pergerakan Saldo</p>
           <p class="truncate text-sm font-bold">
-            {{ formatMoney(summary.netMinor) }}
+            {{ showBalance ? formatMoney(summary.netMinor) : 'Rp••••••' }}
           </p>
         </div>
       </div>
     </section>
 
     <CashFlowChart :series="cashFlowSeries" />
-    <AccountBalanceStrip :items="accountBalances" />
     <ExpenseCategoryBreakdown :items="expenseCategories" />
 
     <section class="soft-card">
