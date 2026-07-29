@@ -6,6 +6,7 @@ import {
   parseDateOnly,
   setMonthOfYear,
   toDateOnly,
+  transactionDateOnly,
 } from '@/domain/date'
 import type { ScheduledTransaction, Transaction } from '@/types/models'
 
@@ -29,18 +30,25 @@ function alignOccurrence(schedule: ScheduledTransaction, date: Date) {
   return clampDayOfMonth(month, schedule.dayOfMonth ?? date.getDate())
 }
 
+function scheduleTime(schedule: ScheduledTransaction) {
+  return schedule.startDate.slice(11, 19) || '00:00:00'
+}
+
 export function getDueOccurrenceDates(
   schedule: ScheduledTransaction,
   today: string,
 ) {
   const dueDates: string[] = []
-  let cursor = alignOccurrence(schedule, parseDateOnly(schedule.startDate))
+  const startDate = transactionDateOnly(schedule.startDate)
+  let cursor = alignOccurrence(schedule, parseDateOnly(startDate))
   const todayDate = parseDateOnly(today)
-  const endDate = schedule.endDate ? parseDateOnly(schedule.endDate) : undefined
+  const endDate = schedule.endDate
+    ? parseDateOnly(transactionDateOnly(schedule.endDate))
+    : undefined
 
   while (!isAfter(cursor, todayDate)) {
     if (
-      !isBefore(cursor, parseDateOnly(schedule.startDate)) &&
+      !isBefore(cursor, parseDateOnly(startDate)) &&
       (!endDate || !isAfter(cursor, endDate))
     ) {
       dueDates.push(toDateOnly(cursor))
@@ -68,7 +76,7 @@ export function createTransactionFromSchedule(
     amountMinor: schedule.amountMinor,
     categoryId: schedule.categoryId,
     note: schedule.note,
-    transactionDate: occurrenceDate,
+    transactionDate: `${occurrenceDate} ${scheduleTime(schedule)}`,
     scheduledTransactionId: schedule.id,
     scheduledOccurrenceDate: occurrenceDate,
     createdAt: timestamp,

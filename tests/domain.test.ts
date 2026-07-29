@@ -9,6 +9,14 @@ import {
   getTopExpenseCategories,
 } from '@/domain/dashboard/chartData'
 import {
+  fromDateTimeLocalInput,
+  formatTransactionDateTimeInput,
+  parseTransactionDateTimeInput,
+  toDateTimeLocalInput,
+  transactionDateOnly,
+} from '@/domain/date'
+import {
+  createTransactionFromSchedule,
   getDueOccurrenceDates,
   missingOccurrenceDates,
 } from '@/domain/scheduling/scheduling'
@@ -119,6 +127,24 @@ describe('money input formatting', () => {
   })
 })
 
+describe('transaction datetime formatting', () => {
+  it('formats input as dmyhis and stores sortable datetime', () => {
+    expect(formatTransactionDateTimeInput('2026-07-29 13:45:09')).toBe(
+      '29/07/2026 13:45:09',
+    )
+    expect(parseTransactionDateTimeInput('29/07/2026 13:45:09')).toBe(
+      '2026-07-29 13:45:09',
+    )
+    expect(transactionDateOnly('2026-07-29 13:45:09')).toBe('2026-07-29')
+    expect(toDateTimeLocalInput('2026-07-29 13:45:09')).toBe(
+      '2026-07-29T13:45:09',
+    )
+    expect(fromDateTimeLocalInput('2026-07-29T13:45:09')).toBe(
+      '2026-07-29 13:45:09',
+    )
+  })
+})
+
 describe('monthly summary', () => {
   it('ignores Transfer and Balance Adjustment', () => {
     const summary = withNetCashFlow(
@@ -187,6 +213,15 @@ describe('scheduled transactions', () => {
         }),
       ]),
     ).toEqual(['2026-01-31', '2026-03-31'])
+  })
+
+  it('keeps scheduled transaction time on generated transactions', () => {
+    expect(
+      createTransactionFromSchedule(
+        schedule({ startDate: '2026-01-31 08:30:15' }),
+        '2026-02-28',
+      ).transactionDate,
+    ).toBe('2026-02-28 08:30:15')
   })
 })
 

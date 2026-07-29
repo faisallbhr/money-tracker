@@ -37,7 +37,10 @@ export const transactionFormSchema = z
     note: optionalText,
     transactionDate: z
       .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Gunakan tanggal yang valid.'),
+      .regex(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+        'Gunakan format dd/mm/yyyy jj:mm:ss.',
+      ),
   })
   .superRefine((value, context) => {
     if (value.type === 'transfer') {
@@ -92,10 +95,18 @@ export const scheduledTransactionSchema = z
     dayOfWeek: z.number().int().min(0).max(6).optional(),
     dayOfMonth: z.number().int().min(1).max(31).optional(),
     monthOfYear: z.number().int().min(1).max(12).optional(),
-    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    startDate: z
+      .string()
+      .regex(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+        'Gunakan format dd/mm/yyyy jj:mm:ss.',
+      ),
     endDate: z
       .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .regex(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+        'Gunakan format dd/mm/yyyy jj:mm:ss.',
+      )
       .optional(),
     behavior: z.enum(scheduledBehaviors),
   })

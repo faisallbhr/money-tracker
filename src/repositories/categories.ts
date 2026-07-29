@@ -2,13 +2,46 @@ import { db } from '@/database/db'
 import { nowIso } from '@/domain/date'
 import type { Category, CategoryType } from '@/types/models'
 
-export async function listCategories(includeArchived = false) {
+export interface CategoryFilter {
+  includeArchived?: boolean
+  type?: CategoryType
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export async function listCategories(filter: boolean | CategoryFilter = false) {
+  const options =
+    typeof filter === 'boolean' ? { includeArchived: filter } : filter
   const categories = await db.categories.toArray()
-  const visibleCategories = includeArchived
+  const search = options.search?.trim().toLowerCase()
+  const visibleCategories = options.includeArchived
     ? categories
     : categories.filter((category) => !category.isArchived)
-  return visibleCategories.sort((left, right) =>
-    left.name.localeCompare(right.name),
+  const filteredCategories = visibleCategories
+    .filter((category) => !options.type || category.type === options.type)
+    .filter(
+      (category) => !search || category.name.toLowerCase().includes(search),
+    )
+    .sort((left, right) => left.name.localeCompare(right.name))
+
+  return typeof options.limit === 'number'
+    ? filteredCategories.slice(
+        options.offset || 0,
+        (options.offset || 0) + options.limit,
+      )
+    : filteredCategories
+}
+
+export async function getCategory(id: string) {
+  return db.categories.get(id)
+}
+
+export async function findCategoryByName(type: CategoryType, name: string) {
+  const normalizedName = name.trim().toLowerCase()
+  const categories = await listCategories({ type })
+  return categories.find(
+    (category) => category.name.toLowerCase() === normalizedName,
   )
 }
 

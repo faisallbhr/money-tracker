@@ -20,7 +20,7 @@ export async function listTransactions(filter: TransactionFilter = {}) {
           .where('transactionDate')
           .between(
             filter.startDate || '0000-01-01',
-            filter.endDate || '9999-12-31',
+            filter.endDate ? `${filter.endDate} 23:59:59` : '9999-12-31',
             true,
             true,
           )

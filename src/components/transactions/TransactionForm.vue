@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 
+import CategorySelect from '@/components/categories/CategorySelect.vue'
 import AppButton from '@/components/common/AppButton.vue'
+import AppDateTimeInput from '@/components/common/AppDateTimeInput.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
-import { todayDate } from '@/domain/date'
+import { nowDateTime } from '@/domain/date'
 import { parseMoneyToMinor } from '@/domain/money'
 import { listAccounts } from '@/repositories/accounts'
-import { listCategories, saveCategory } from '@/repositories/categories'
+import {
+  findCategoryByName,
+  getCategory,
+  saveCategory,
+} from '@/repositories/categories'
 import { listTransactions, saveTransaction } from '@/repositories/transactions'
 import { transactionFormSchema } from '@/schemas/forms'
 import { useToastStore } from '@/stores/toast'
-import type { Account, Category, TransactionType } from '@/types/models'
+import type { Account, TransactionType } from '@/types/models'
 
 const props = defineProps<{ type: TransactionType }>()
 const emit = defineEmits<{ saved: [] }>()
 
 const toast = useToastStore()
 const accounts = ref<Account[]>([])
-const categories = ref<Category[]>([])
 const errors = ref<Record<string, string>>({})
 const loading = ref(true)
 const saving = ref(false)
@@ -30,7 +35,7 @@ const form = reactive({
   amount: '',
   adjustmentDirection: 'increase',
   note: '',
-  transactionDate: todayDate(),
+  transactionDate: nowDateTime(),
 })
 
 const accountOptions = computed(() => [
@@ -40,19 +45,14 @@ const accountOptions = computed(() => [
     value: account.id,
   })),
 ])
-const categorySuggestions = computed(() =>
-  categories.value.filter((category) => category.type === props.type),
+const categoryType = computed(() =>
+  props.type === 'income' || props.type === 'expense' ? props.type : 'expense',
 )
-const categoryInputId = computed(() => `category-options-${props.type}`)
 
 onMounted(async () => {
   try {
-    const [nextAccounts, nextCategories] = await Promise.all([
-      listAccounts(),
-      listCategories(),
-    ])
+    const nextAccounts = await listAccounts()
     accounts.value = nextAccounts
-    categories.value = nextCategories
 
     const [lastTransaction] = await listTransactions({
       type: props.type,
@@ -65,12 +65,12 @@ onMounted(async () => {
     form.toAccountId = lastTransaction.toAccountId || ''
     form.amount = String(lastTransaction.amountMinor / 100)
     form.note = lastTransaction.note || ''
+    form.transactionDate = nowDateTime()
     form.adjustmentDirection =
       lastTransaction.adjustmentDirection || form.adjustmentDirection
-    form.categoryName =
-      categories.value.find(
-        (category) => category.id === lastTransaction.categoryId,
-      )?.name || ''
+    form.categoryName = lastTransaction.categoryId
+      ? (await getCategory(lastTransaction.categoryId))?.name || ''
+      : ''
   } finally {
     loading.value = false
   }
@@ -104,14 +104,9 @@ async function submit() {
 
   saving.value = true
   try {
-    const existingCategory = categories.value.find(
-      (category) =>
-        category.type === props.type &&
-        category.name.toLowerCase() === categoryName.toLowerCase(),
-    )
     const categoryId =
       categoryName && (props.type === 'income' || props.type === 'expense')
-        ? existingCategory?.id ||
+        ? (await findCategoryByName(props.type, categoryName))?.id ||
           (await saveCategory({ name: categoryName, type: props.type }))
         : undefined
 
@@ -177,23 +172,15 @@ async function submit() {
         ]"
         :error="errors.adjustmentDirection"
       />
-      <AppInput
+      <CategorySelect
         v-if="type === 'income' || type === 'expense'"
         v-model="form.categoryName"
         label="Kategori"
-        :list="categoryInputId"
+        :type="categoryType"
       />
-      <datalist :id="categoryInputId">
-        <option
-          v-for="category in categorySuggestions"
-          :key="category.id"
-          :value="category.name"
-        />
-      </datalist>
-      <AppInput
+      <AppDateTimeInput
         v-model="form.transactionDate"
-        label="Tanggal"
-        type="date"
+        label="Tanggal & Waktu"
         :error="errors.transactionDate"
       />
       <AppInput v-model="form.note" label="Catatan" />

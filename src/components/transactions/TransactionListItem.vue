@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowRightLeft, Minus, Plus, SlidersHorizontal } from 'lucide-vue-next'
 
-import { formatDateIndonesia } from '@/domain/date'
+import { formatDateTimeIndonesia } from '@/domain/date'
 import { formatMoney } from '@/domain/money'
 import type { Account, Category, Transaction } from '@/types/models'
 
@@ -29,7 +29,7 @@ function description() {
   if (props.transaction.type === 'transfer') {
     return `${accountName(props.transaction.fromAccountId)} → ${accountName(props.transaction.toAccountId)}`
   }
-  return `${accountName(props.transaction.accountId)} · ${formatDateIndonesia(props.transaction.transactionDate)}`
+  return `${accountName(props.transaction.accountId)} · ${formatDateTimeIndonesia(props.transaction.transactionDate)}`
 }
 
 function signedAmount() {

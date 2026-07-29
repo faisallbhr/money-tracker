@@ -1,6 +1,10 @@
 import { endOfMonth, format, getDate, startOfMonth } from 'date-fns'
 
-import { dateOnlyIsBetween } from '@/domain/date'
+import {
+  dateOnlyIsBetween,
+  parseDateOnly,
+  transactionDateOnly,
+} from '@/domain/date'
 import type { Category, Transaction } from '@/types/models'
 
 export interface CashFlowPoint {
@@ -30,8 +34,9 @@ export function getMonthlyCashFlowSeries(
 
   return weeks.map((week) => {
     const weekTransactions = transactions.filter((transaction) => {
-      if (!transaction.transactionDate.startsWith(monthKey)) return false
-      const day = getDate(new Date(`${transaction.transactionDate}T00:00:00`))
+      const date = transactionDateOnly(transaction.transactionDate)
+      if (!date.startsWith(monthKey)) return false
+      const day = getDate(parseDateOnly(date))
       return day >= week.startDay && day <= week.endDay
     })
 

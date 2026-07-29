@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 
+import CategorySelect from '@/components/categories/CategorySelect.vue'
 import AppButton from '@/components/common/AppButton.vue'
+import AppDateTimeInput from '@/components/common/AppDateTimeInput.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
-import { todayDate } from '@/domain/date'
+import { nowDateTime } from '@/domain/date'
 import { parseMoneyToMinor } from '@/domain/money'
 import { listAccounts } from '@/repositories/accounts'
-import { listCategories, saveCategory } from '@/repositories/categories'
+import {
+  findCategoryByName,
+  getCategory,
+  saveCategory,
+} from '@/repositories/categories'
 import { saveScheduledTransaction } from '@/repositories/scheduledTransactions'
 import { getSettings } from '@/repositories/settings'
 import { scheduledTransactionSchema } from '@/schemas/forms'
 import { useToastStore } from '@/stores/toast'
 import type {
   Account,
-  Category,
   ScheduledBehavior,
   ScheduledTransaction,
 } from '@/types/models'
@@ -23,7 +28,6 @@ const props = defineProps<{ schedule?: ScheduledTransaction }>()
 const emit = defineEmits<{ saved: [] }>()
 const toast = useToastStore()
 const accounts = ref<Account[]>([])
-const categories = ref<Category[]>([])
 const errors = ref<Record<string, string>>({})
 const loading = ref(true)
 const saving = ref(false)
@@ -39,7 +43,7 @@ const form = reactive({
   frequency: props.schedule?.frequency || 'monthly',
   interval: props.schedule?.interval || 1,
   dayOfMonth: props.schedule?.dayOfMonth || new Date().getDate(),
-  startDate: props.schedule?.startDate || todayDate(),
+  startDate: props.schedule?.startDate || nowDateTime(),
   endDate: props.schedule?.endDate || '',
   behavior: (props.schedule?.behavior || 'confirmation') as ScheduledBehavior,
 })
@@ -51,28 +55,22 @@ const accountOptions = computed(() => [
     value: account.id,
   })),
 ])
-const categorySuggestions = computed(() =>
-  categories.value.filter((category) => category.type === form.type),
-)
-const categoryInputId = computed(
-  () => `scheduled-category-options-${form.type}`,
+const categoryType = computed(() =>
+  form.type === 'income' || form.type === 'expense' ? form.type : 'expense',
 )
 
 onMounted(async () => {
   try {
-    const [nextAccounts, nextCategories, settings] = await Promise.all([
+    const [nextAccounts, settings] = await Promise.all([
       listAccounts(),
-      listCategories(),
       getSettings(),
     ])
     accounts.value = nextAccounts
-    categories.value = nextCategories
     form.behavior =
       props.schedule?.behavior || settings.scheduledTransactionDefaultBehavior
-    form.categoryName =
-      nextCategories.find(
-        (category) => category.id === props.schedule?.categoryId,
-      )?.name || ''
+    form.categoryName = props.schedule?.categoryId
+      ? (await getCategory(props.schedule.categoryId))?.name || ''
+      : ''
   } finally {
     loading.value = false
   }
@@ -108,14 +106,9 @@ async function submit() {
   }
   saving.value = true
   try {
-    const existingCategory = categories.value.find(
-      (category) =>
-        category.type === form.type &&
-        category.name.toLowerCase() === categoryName.toLowerCase(),
-    )
     const categoryId =
       categoryName && (form.type === 'income' || form.type === 'expense')
-        ? existingCategory?.id ||
+        ? (await findCategoryByName(form.type, categoryName))?.id ||
           (await saveCategory({ name: categoryName, type: form.type }))
         : undefined
 
@@ -179,7 +172,7 @@ async function submit() {
         :error="errors.amountMinor"
       />
       <div class="grid gap-4 sm:grid-cols-2">
-        <AppInput v-model="form.startDate" label="Mulai" type="date" />
+        <AppDateTimeInput v-model="form.startDate" label="Mulai" />
         <AppInput
           v-model="form.dayOfMonth"
           label="Tanggal Bulanan"
@@ -203,19 +196,12 @@ async function submit() {
           { label: 'Konfirmasi', value: 'confirmation' },
         ]"
       />
-      <AppInput
+      <CategorySelect
         v-if="form.type !== 'transfer'"
         v-model="form.categoryName"
         label="Kategori"
-        :list="categoryInputId"
+        :type="categoryType"
       />
-      <datalist :id="categoryInputId">
-        <option
-          v-for="category in categorySuggestions"
-          :key="category.id"
-          :value="category.name"
-        />
-      </datalist>
       <AppInput v-model="form.note" label="Catatan" />
     </template>
 

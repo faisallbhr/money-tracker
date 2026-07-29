@@ -77,7 +77,7 @@ async function submit() {
       :error="errors.initialBalanceMinor"
     />
     <AppButton type="submit" :disabled="saving">
-      {{ saving ? 'Menyimpan...' : 'Simpan Akun' }}
+      {{ saving ? 'Menyimpan...' : 'Simpan' }}
     </AppButton>
   </form>
 </template>
