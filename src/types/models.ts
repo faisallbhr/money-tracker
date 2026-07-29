@@ -87,8 +87,6 @@ export interface ScheduledTransaction {
 
 export interface Settings {
   id: 'default'
-  firstDayOfWeek: 0 | 1
-  scheduledTransactionDefaultBehavior: ScheduledBehavior
   updatedAt: string
 }
 

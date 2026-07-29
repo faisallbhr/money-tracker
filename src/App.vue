@@ -15,10 +15,8 @@ import AppSheet from '@/components/common/AppSheet.vue'
 import AppToast from '@/components/common/AppToast.vue'
 import TransactionForm from '@/components/transactions/TransactionForm.vue'
 import { processOverdueSchedules } from '@/repositories/scheduledTransactions'
-import { useSettingsStore } from '@/stores/settings'
 import { useToastStore } from '@/stores/toast'
 
-const settings = useSettingsStore()
 const toast = useToastStore()
 const route = useRoute()
 const showAddMenu = ref(false)
@@ -33,13 +31,12 @@ const addSheetTitle = computed(() => {
 
 const navItems = [
   { to: '/', label: 'Beranda', icon: Home },
-  { to: '/transactions', label: 'Transaksi', icon: ReceiptText },
+  { to: '/reports', label: 'Laporan', icon: ReceiptText },
   { to: '/accounts', label: 'Akun', icon: Landmark },
   { to: '/scheduled', label: 'Terjadwal', icon: CalendarClock },
 ] as const
 
 onMounted(async () => {
-  await settings.load()
   try {
     const confirmations = await processOverdueSchedules()
     if (confirmations.length) {

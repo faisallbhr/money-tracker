@@ -15,7 +15,6 @@ import {
   saveCategory,
 } from '@/repositories/categories'
 import { saveScheduledTransaction } from '@/repositories/scheduledTransactions'
-import { getSettings } from '@/repositories/settings'
 import { scheduledTransactionSchema } from '@/schemas/forms'
 import { useToastStore } from '@/stores/toast'
 import type {
@@ -65,13 +64,8 @@ const categoryType = computed(() =>
 
 onMounted(async () => {
   try {
-    const [nextAccounts, settings] = await Promise.all([
-      listAccounts(),
-      getSettings(),
-    ])
+    const nextAccounts = await listAccounts()
     accounts.value = nextAccounts
-    form.behavior =
-      props.schedule?.behavior || settings.scheduledTransactionDefaultBehavior
     form.categoryName = props.schedule?.categoryId
       ? (await getCategory(props.schedule.categoryId))?.name || ''
       : ''

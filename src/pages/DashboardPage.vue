@@ -10,28 +10,28 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 
 import AppCard from '@/components/common/AppCard.vue'
-import CashFlowChart from '@/components/dashboard/CashFlowChart.vue'
 import ExpenseCategoryBreakdown from '@/components/dashboard/ExpenseCategoryBreakdown.vue'
 import UpcomingScheduledList from '@/components/dashboard/UpcomingScheduledList.vue'
+import TransactionDetailModal from '@/components/transactions/TransactionDetailModal.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import { calculateTotalBalance } from '@/domain/balance/balance'
-import { formatMonthIndonesia } from '@/domain/date'
-import {
-  getMonthlyCashFlowSeries,
-  getTopExpenseCategories,
-} from '@/domain/dashboard/chartData'
+import { formatMonthIndonesia, transactionDateOnly } from '@/domain/date'
+import { getTopExpenseCategories } from '@/domain/dashboard/chartData'
 import { formatMoney } from '@/domain/money'
 import {
   summarizeIncomeExpense,
   withNetCashFlow,
 } from '@/domain/transactions/summary'
+import type { Transaction } from '@/types/models'
 
 const data = useFinanceData()
 const showBalanceKey = 'money-tracker-show-balance'
 const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
+const selectedTransaction = ref<Transaction | null>(null)
 const now = new Date()
 const dashboardLimit = 5
+const reportMonth = format(now, 'yyyy-MM')
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
 const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
@@ -49,9 +49,6 @@ const summary = computed(() =>
     summarizeIncomeExpense(data.transactions.value, monthStart, monthEnd),
   ),
 )
-const cashFlowSeries = computed(() =>
-  getMonthlyCashFlowSeries(data.transactions.value, now),
-)
 const expenseCategories = computed(() =>
   getTopExpenseCategories(
     data.transactions.value,
@@ -63,6 +60,11 @@ const expenseCategories = computed(() =>
 const recentTransactions = computed(() =>
   data.transactions.value.slice(0, dashboardLimit),
 )
+const recentReportTo = computed(() => {
+  const [latestTransaction] = recentTransactions.value
+  if (!latestTransaction) return '/reports'
+  return `/reports?month=${transactionDateOnly(latestTransaction.transactionDate).slice(0, 7)}`
+})
 const upcomingSchedules = computed(() =>
   data.schedules.value.slice(0, dashboardLimit),
 )
@@ -130,17 +132,20 @@ const upcomingSchedules = computed(() =>
         </div>
       </section>
 
-      <CashFlowChart :series="cashFlowSeries" />
-      <ExpenseCategoryBreakdown :items="expenseCategories" />
+      <ExpenseCategoryBreakdown
+        :items="expenseCategories"
+        :to="`/reports?month=${reportMonth}`"
+      />
 
       <AppCard>
         <div class="mb-3 flex items-center justify-between">
           <h2 class="section-title">Transaksi Terbaru</h2>
           <RouterLink
-            to="/transactions"
+            :to="recentReportTo"
             class="text-sm font-medium text-teal-700"
-            >Lihat Semua</RouterLink
           >
+            Lihat Semua
+          </RouterLink>
         </div>
         <TransactionListItem
           v-for="transaction in recentTransactions"
@@ -148,6 +153,7 @@ const upcomingSchedules = computed(() =>
           :transaction="transaction"
           :accounts="data.accounts.value"
           :categories="data.categories.value"
+          @select="selectedTransaction = $event"
         />
         <p v-if="!recentTransactions.length" class="empty-state">
           Belum ada transaksi.
@@ -156,5 +162,12 @@ const upcomingSchedules = computed(() =>
 
       <UpcomingScheduledList :schedules="upcomingSchedules" />
     </template>
+
+    <TransactionDetailModal
+      :transaction="selectedTransaction"
+      :accounts="data.accounts.value"
+      :categories="data.categories.value"
+      @close="selectedTransaction = null"
+    />
   </section>
 </template>

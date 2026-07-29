@@ -85,7 +85,7 @@ onBeforeUnmount(() => {
         >
           <button
             type="button"
-            class="flex min-h-11 w-full shrink-0 touch-none items-center justify-center"
+            class="flex min-h-11 w-full shrink-0 touch-none items-center justify-center focus:outline-none"
             aria-label="Geser ke bawah untuk menutup"
             @pointerdown="startDrag"
           >
@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
             <h2 class="text-lg font-bold">{{ title }}</h2>
             <button
               type="button"
-              class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+              class="grid size-10 shrink-0 place-items-center rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none"
               aria-label="Tutup"
               @click="close"
             >
@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
             v-else
             type="button"
             aria-label="Tutup"
-            class="mx-4 mb-4 grid size-10 shrink-0 place-items-center self-end rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+            class="mx-4 mb-4 grid size-10 shrink-0 place-items-center self-end rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none"
             @click="close"
           >
             <X :size="18" />

@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import AppCard from '@/components/common/AppCard.vue'
+import TransactionDetailModal from '@/components/transactions/TransactionDetailModal.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import { calculateAccountBalance } from '@/domain/balance/balance'
 import { formatMoney } from '@/domain/money'
+import type { Transaction } from '@/types/models'
 import { accountTypeLabel } from '@/utils/labels'
 
 const route = useRoute()
 const accountId = String(route.params.id)
 const data = useFinanceData()
+const selectedTransaction = ref<Transaction | null>(null)
 onMounted(() => data.load({ accountId }))
 
 const account = computed(() =>
@@ -43,10 +46,17 @@ const balance = computed(() =>
         :transaction="transaction"
         :accounts="data.accounts.value"
         :categories="data.categories.value"
+        @select="selectedTransaction = $event"
       />
       <p v-if="!data.transactions.value.length" class="empty-state">
         Belum ada transaksi untuk akun ini.
       </p>
     </AppCard>
+    <TransactionDetailModal
+      :transaction="selectedTransaction"
+      :accounts="data.accounts.value"
+      :categories="data.categories.value"
+      @close="selectedTransaction = null"
+    />
   </section>
 </template>

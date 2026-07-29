@@ -1,56 +1,12 @@
-import { endOfMonth, format, getDate, startOfMonth } from 'date-fns'
+import { endOfMonth, format, startOfMonth } from 'date-fns'
 
-import {
-  dateOnlyIsBetween,
-  parseDateOnly,
-  transactionDateOnly,
-} from '@/domain/date'
+import { dateOnlyIsBetween } from '@/domain/date'
 import type { Category, Transaction } from '@/types/models'
-
-export interface CashFlowPoint {
-  label: string
-  incomeMinor: number
-  expenseMinor: number
-}
 
 export interface ExpenseCategoryPoint {
   name: string
   amountMinor: number
   percentage: number
-}
-
-export function getMonthlyCashFlowSeries(
-  transactions: readonly Transaction[],
-  month: Date,
-): CashFlowPoint[] {
-  const weeks = [
-    { label: 'M1', startDay: 1, endDay: 7 },
-    { label: 'M2', startDay: 8, endDay: 14 },
-    { label: 'M3', startDay: 15, endDay: 21 },
-    { label: 'M4', startDay: 22, endDay: 28 },
-    { label: 'M5', startDay: 29, endDay: 31 },
-  ]
-  const monthKey = format(month, 'yyyy-MM')
-
-  return weeks.map((week) => {
-    const weekTransactions = transactions.filter((transaction) => {
-      const date = transactionDateOnly(transaction.transactionDate)
-      if (!date.startsWith(monthKey)) return false
-      const day = getDate(parseDateOnly(date))
-      return day >= week.startDay && day <= week.endDay
-    })
-
-    return weekTransactions.reduce(
-      (point, transaction) => {
-        if (transaction.type === 'income')
-          point.incomeMinor += transaction.amountMinor
-        if (transaction.type === 'expense')
-          point.expenseMinor += transaction.amountMinor
-        return point
-      },
-      { label: week.label, incomeMinor: 0, expenseMinor: 0 },
-    )
-  })
 }
 
 export function getTopExpenseCategories(

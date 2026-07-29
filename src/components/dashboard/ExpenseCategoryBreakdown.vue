@@ -3,13 +3,20 @@ import AppCard from '@/components/common/AppCard.vue'
 import { formatMoney } from '@/domain/money'
 import type { ExpenseCategoryPoint } from '@/domain/dashboard/chartData'
 
-defineProps<{ items: readonly ExpenseCategoryPoint[] }>()
+defineProps<{ items: readonly ExpenseCategoryPoint[]; to?: string }>()
 </script>
 
 <template>
   <AppCard>
-    <h2 class="section-title">Pengeluaran per Kategori</h2>
-    <p class="section-subtitle">Lima kategori terbesar bulan ini</p>
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h2 class="section-title">Pengeluaran per Kategori</h2>
+        <p class="section-subtitle">Lima kategori terbesar bulan ini</p>
+      </div>
+      <RouterLink v-if="to" :to="to" class="text-sm font-medium text-teal-700">
+        Lihat Semua
+      </RouterLink>
+    </div>
 
     <div v-if="items.length" class="mt-4 grid gap-3">
       <div v-for="item in items" :key="item.name" class="grid gap-1">

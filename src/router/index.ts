@@ -12,9 +12,9 @@ export const router = createRouter({
       component: () => import('@/pages/DashboardPage.vue'),
     },
     {
-      path: '/transactions',
-      name: 'transactions',
-      component: () => import('@/pages/TransactionsPage.vue'),
+      path: '/reports',
+      name: 'reports',
+      component: () => import('@/pages/ReportsPage.vue'),
     },
     {
       path: '/accounts',

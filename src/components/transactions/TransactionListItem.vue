@@ -10,6 +10,7 @@ const props = defineProps<{
   accounts: readonly Account[]
   categories: readonly Category[]
 }>()
+const emit = defineEmits<{ select: [transaction: Transaction] }>()
 
 const accountName = (id?: string) =>
   props.accounts.find((account) => account.id === id)?.name || 'Akun hilang'
@@ -50,8 +51,10 @@ function signedAmount() {
 </script>
 
 <template>
-  <article
-    class="flex min-h-[64px] items-center gap-3 border-b border-slate-100 py-3 last:border-0"
+  <button
+    type="button"
+    class="flex min-h-[64px] w-full items-center gap-3 border-b border-slate-100 py-3 text-left last:border-0 hover:bg-slate-50 focus:outline-none active:bg-slate-50"
+    @click="emit('select', transaction)"
   >
     <div
       class="grid size-11 shrink-0 place-items-center rounded-2xl"
@@ -80,5 +83,5 @@ function signedAmount() {
     >
       {{ signedAmount() }}
     </p>
-  </article>
+  </button>
 </template>

@@ -4,10 +4,7 @@ import {
   calculateAccountBalance,
   calculateTotalBalance,
 } from '@/domain/balance/balance'
-import {
-  getMonthlyCashFlowSeries,
-  getTopExpenseCategories,
-} from '@/domain/dashboard/chartData'
+import { getTopExpenseCategories } from '@/domain/dashboard/chartData'
 import {
   fromDateTimeLocalInput,
   formatTransactionDateTimeInput,
@@ -226,44 +223,6 @@ describe('scheduled transactions', () => {
 })
 
 describe('dashboard chart aggregation', () => {
-  it('groups monthly income and expense by week and ignores Transfer', () => {
-    const series = getMonthlyCashFlowSeries(
-      [
-        transaction({
-          type: 'income',
-          accountId: 'bank',
-          amountMinor: 500_00,
-          transactionDate: '2026-07-03',
-        }),
-        transaction({
-          type: 'expense',
-          accountId: 'bank',
-          amountMinor: 125_00,
-          transactionDate: '2026-07-08',
-        }),
-        transaction({
-          type: 'transfer',
-          fromAccountId: 'bank',
-          toAccountId: 'cash',
-          amountMinor: 200_00,
-          transactionDate: '2026-07-08',
-        }),
-      ],
-      new Date('2026-07-10T00:00:00'),
-    )
-
-    expect(series[0]).toEqual({
-      label: 'M1',
-      incomeMinor: 500_00,
-      expenseMinor: 0,
-    })
-    expect(series[1]).toEqual({
-      label: 'M2',
-      incomeMinor: 0,
-      expenseMinor: 125_00,
-    })
-  })
-
   it('returns top expense categories and groups the rest as Lainnya', () => {
     const breakdown = getTopExpenseCategories(
       [

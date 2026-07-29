@@ -1,6 +1,6 @@
 import { db } from '@/database/db'
 import { nowIso } from '@/domain/date'
-import type { Category, Settings } from '@/types/models'
+import type { Category } from '@/types/models'
 
 const incomeCategories = [
   'Gaji',
@@ -25,7 +25,7 @@ const expenseCategories = [
 ]
 
 export async function seedDefaults() {
-  await db.transaction('rw', db.categories, db.settings, async () => {
+  await db.transaction('rw', db.categories, async () => {
     if ((await db.categories.count()) === 0) {
       const timestamp = nowIso()
       const categories: Category[] = [
@@ -35,11 +35,6 @@ export async function seedDefaults() {
         ),
       ]
       await db.categories.bulkAdd(categories)
-    }
-
-    const settings = await db.settings.get('default')
-    if (!settings) {
-      await db.settings.add(defaultSettings())
     }
   })
 }
@@ -57,14 +52,5 @@ function category(
     isArchived: false,
     createdAt: timestamp,
     updatedAt: timestamp,
-  }
-}
-
-export function defaultSettings(): Settings {
-  return {
-    id: 'default',
-    firstDayOfWeek: 1,
-    scheduledTransactionDefaultBehavior: 'confirmation',
-    updatedAt: nowIso(),
   }
 }

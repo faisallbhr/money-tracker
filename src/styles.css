@@ -90,3 +90,23 @@ textarea {
 .sheet-leave-to .app-sheet {
   transform: translateY(100%);
 }
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 160ms ease;
+}
+
+.modal-enter-active .app-modal,
+.modal-leave-active .app-modal {
+  transition: transform 180ms ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .app-modal,
+.modal-leave-to .app-modal {
+  transform: translateY(0.5rem) scale(0.98);
+}
