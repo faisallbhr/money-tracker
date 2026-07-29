@@ -87,6 +87,7 @@ watch(
     :label="label"
     :model-value="modelValue"
     :options="options"
+    placeholder="Pilih Kategori"
     searchable
     :search-value="search"
     :create-label="createLabel"

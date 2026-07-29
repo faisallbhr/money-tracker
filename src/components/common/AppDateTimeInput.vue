@@ -16,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const input = ref<HTMLInputElement | null>(null)
 const pickerValue = computed(() => toDateTimeLocalInput(props.modelValue))
+const hasValue = computed(() => Boolean(props.modelValue))
 const displayValue = computed(() =>
   props.modelValue ? formatTransactionDateTimeInput(props.modelValue) : '',
 )
@@ -45,7 +46,8 @@ function openPicker() {
         "
       />
       <div
-        class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-left text-slate-900 outline-none peer-focus:border-teal-700 peer-focus:ring-2 peer-focus:ring-teal-700/20"
+        class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-left outline-none peer-focus:border-teal-700 peer-focus:ring-2 peer-focus:ring-teal-700/20"
+        :class="hasValue ? 'text-slate-900' : 'text-slate-400'"
       >
         {{ displayValue || 'Pilih tanggal & waktu' }}
       </div>

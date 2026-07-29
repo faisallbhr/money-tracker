@@ -9,6 +9,7 @@ const props = defineProps<{
   error?: string
   modelValue?: SelectValue
   options: readonly { label: string; value: SelectValue }[]
+  placeholder?: string
   searchable?: boolean
   searchValue?: string
   createLabel?: string
@@ -23,13 +24,17 @@ const emit = defineEmits<{
   create: []
 }>()
 const root = ref<HTMLElement | null>(null)
+const dropdown = ref<HTMLElement | null>(null)
 const open = ref(false)
-const openUp = ref(false)
+const dropdownStyle = ref<Record<string, string>>({})
 const selectedOption = computed(() =>
   props.options.find((item) => String(item.value) === String(props.modelValue)),
 )
 const placeholderOption = computed(() =>
   props.options.find((item) => String(item.value) === ''),
+)
+const hasValue = computed(
+  () => props.modelValue !== undefined && String(props.modelValue) !== '',
 )
 const selectableOptions = computed(() =>
   props.options.filter((item) => String(item.value) !== ''),
@@ -53,7 +58,10 @@ function close() {
 }
 
 function closeOnOutsidePointerDown(event: PointerEvent) {
-  if (!root.value?.contains(event.target as Node)) close()
+  const target = event.target as Node
+  if (!root.value?.contains(target) && !dropdown.value?.contains(target)) {
+    close()
+  }
 }
 
 function updatePlacement() {
@@ -64,7 +72,13 @@ function updatePlacement() {
     selectableOptions.value.length * 40 + (props.createLabel ? 40 : 0) + 8,
   )
   const bottomSpace = window.innerHeight - rect.bottom
-  openUp.value = bottomSpace < dropdownHeight && rect.top > bottomSpace
+  const openUp = bottomSpace < dropdownHeight && rect.top > bottomSpace
+  dropdownStyle.value = {
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    top: openUp ? 'auto' : `${rect.bottom + 4}px`,
+    bottom: openUp ? `${window.innerHeight - rect.top + 4}px` : 'auto',
+  }
 }
 
 async function openOptions() {
@@ -113,28 +127,39 @@ onBeforeUnmount(close)
       <input
         v-if="searchable"
         :value="searchValue"
-        class="min-h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-slate-900 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        :placeholder="placeholder || placeholderOption?.label || 'Pilih'"
+        class="min-h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
         @focus="openOptions"
         @input="updateSearch(($event.target as HTMLInputElement).value)"
       />
       <button
         v-else
         type="button"
-        class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-left text-slate-900 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        class="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-left outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        :class="hasValue ? 'text-slate-900' : 'text-slate-400'"
         :aria-expanded="open"
         @click.stop="toggleOptions"
       >
-        {{ selectedOption?.label || placeholderOption?.label || 'Pilih' }}
+        {{
+          selectedOption?.label ||
+          placeholder ||
+          placeholderOption?.label ||
+          'Pilih'
+        }}
       </button>
       <ChevronDown
         :size="18"
         class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
       />
     </span>
+    <span v-if="error" class="text-xs text-rose-700">{{ error }}</span>
+  </div>
+  <Teleport to="body">
     <div
       v-if="open"
-      class="absolute inset-x-0 z-50 max-h-44 overflow-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
-      :class="openUp ? 'bottom-full mb-1' : 'top-full mt-1'"
+      ref="dropdown"
+      class="fixed z-[60] max-h-44 overflow-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 text-sm shadow-lg"
+      :style="dropdownStyle"
       @scroll="loadMore"
     >
       <button
@@ -167,6 +192,5 @@ onBeforeUnmount(close)
       </p>
       <p v-if="loading" class="px-3 py-2 text-sm text-slate-500">Memuat...</p>
     </div>
-    <span v-if="error" class="text-xs text-rose-700">{{ error }}</span>
-  </div>
+  </Teleport>
 </template>

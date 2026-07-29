@@ -63,8 +63,6 @@ onMounted(async () => {
     form.accountId = lastTransaction.accountId || ''
     form.fromAccountId = lastTransaction.fromAccountId || ''
     form.toAccountId = lastTransaction.toAccountId || ''
-    form.amount = String(lastTransaction.amountMinor / 100)
-    form.note = lastTransaction.note || ''
     form.transactionDate = nowDateTime()
     form.adjustmentDirection =
       lastTransaction.adjustmentDirection || form.adjustmentDirection

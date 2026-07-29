@@ -81,15 +81,17 @@ onBeforeUnmount(() => {
           role="dialog"
           aria-modal="true"
           :aria-label="title || 'Dialog'"
-          class="modal-sheet max-h-[92vh] w-full overflow-auto rounded-t-3xl bg-white p-4 shadow-xl sm:max-w-xl sm:rounded-3xl"
+          class="modal-sheet max-h-[92vh] w-full overflow-auto rounded-t-3xl bg-white px-4 pb-4 shadow-xl sm:max-w-xl sm:rounded-3xl sm:p-4"
           :style="sheetStyle"
         >
           <button
             type="button"
-            class="mx-auto mb-3 block h-1.5 w-12 rounded-full bg-slate-300 sm:hidden"
+            class="flex min-h-11 w-full touch-none items-center justify-center sm:hidden"
             aria-label="Geser ke bawah untuk menutup"
             @pointerdown="startDrag"
-          />
+          >
+            <span class="h-1.5 w-12 rounded-full bg-slate-300" />
+          </button>
           <header
             v-if="title"
             class="mb-4 flex items-center justify-between gap-3"
