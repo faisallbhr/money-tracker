@@ -7,7 +7,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-vue-next'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import CashFlowChart from '@/components/dashboard/CashFlowChart.vue'
 import ExpenseCategoryBreakdown from '@/components/dashboard/ExpenseCategoryBreakdown.vue'
@@ -27,13 +27,18 @@ import {
 } from '@/domain/transactions/summary'
 
 const data = useFinanceData()
-const showBalance = ref(true)
+const showBalanceKey = 'money-tracker-show-balance'
+const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
 const now = new Date()
 const dashboardLimit = 5
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
 const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
 onMounted(() => data.load())
+
+watch(showBalance, (value) => {
+  localStorage.setItem(showBalanceKey, String(value))
+})
 
 const totalBalance = computed(() =>
   calculateTotalBalance(data.accounts.value, data.transactions.value),
