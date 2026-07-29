@@ -11,7 +11,7 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 import AppButton from '@/components/common/AppButton.vue'
-import AppModal from '@/components/common/AppModal.vue'
+import AppSheet from '@/components/common/AppSheet.vue'
 import AppToast from '@/components/common/AppToast.vue'
 import TransactionForm from '@/components/transactions/TransactionForm.vue'
 import { processOverdueSchedules } from '@/repositories/scheduledTransactions'
@@ -24,7 +24,7 @@ const route = useRoute()
 const showAddMenu = ref(false)
 const addType = ref<'income' | 'expense' | 'transfer' | null>(null)
 const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
-const addModalTitle = computed(() => {
+const addSheetTitle = computed(() => {
   if (addType.value === 'expense') return 'Tambah Pengeluaran'
   if (addType.value === 'income') return 'Tambah Pemasukan'
   if (addType.value === 'transfer') return 'Transfer'
@@ -123,7 +123,7 @@ function isNavActive(to: string) {
       </div>
     </nav>
 
-    <AppModal :open="showAddMenu" :title="addModalTitle" @close="closeAddMenu">
+    <AppSheet :open="showAddMenu" :title="addSheetTitle" @close="closeAddMenu">
       <div v-if="!addType" class="grid gap-3">
         <AppButton @click="addType = 'expense'">Tambah Pengeluaran</AppButton>
         <AppButton variant="secondary" @click="addType = 'income'"
@@ -134,7 +134,7 @@ function isNavActive(to: string) {
         >
       </div>
       <TransactionForm v-if="addType" :type="addType" @saved="closeAddMenu" />
-    </AppModal>
+    </AppSheet>
 
     <div
       v-if="offlineReady || needRefresh"

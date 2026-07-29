@@ -6,7 +6,7 @@ import AppButton from '@/components/common/AppButton.vue'
 import AppCard from '@/components/common/AppCard.vue'
 import AppDateTimeInput from '@/components/common/AppDateTimeInput.vue'
 import AppInput from '@/components/common/AppInput.vue'
-import AppModal from '@/components/common/AppModal.vue'
+import AppSheet from '@/components/common/AppSheet.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
@@ -86,7 +86,7 @@ onMounted(load)
       </p>
     </AppCard>
 
-    <AppModal
+    <AppSheet
       :open="showFilters"
       title="Filter Transaksi"
       @close="showFilters = false"
@@ -127,6 +127,6 @@ onMounted(load)
           {{ data.loading.value ? 'Memuat...' : 'Terapkan Filter' }}
         </AppButton>
       </form>
-    </AppModal>
+    </AppSheet>
   </section>
 </template>

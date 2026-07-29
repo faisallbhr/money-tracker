@@ -5,7 +5,7 @@ import { onMounted, ref } from 'vue'
 import AccountForm from '@/components/accounts/AccountForm.vue'
 import AppButton from '@/components/common/AppButton.vue'
 import AppCard from '@/components/common/AppCard.vue'
-import AppModal from '@/components/common/AppModal.vue'
+import AppSheet from '@/components/common/AppSheet.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import type { Account } from '@/types/models'
 import { accountTypeLabel } from '@/utils/labels'
@@ -82,14 +82,14 @@ async function updated() {
       </p>
     </template>
 
-    <AppModal
+    <AppSheet
       :open="showCreate"
       title="Tambah Akun"
       @close="showCreate = false"
     >
       <AccountForm @saved="created" />
-    </AppModal>
-    <AppModal
+    </AppSheet>
+    <AppSheet
       :open="Boolean(editingAccount)"
       title="Ubah Akun"
       @close="editingAccount = null"
@@ -99,6 +99,6 @@ async function updated() {
         :account="editingAccount"
         @saved="updated"
       />
-    </AppModal>
+    </AppSheet>
   </section>
 </template>

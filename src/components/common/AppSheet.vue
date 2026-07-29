@@ -29,7 +29,6 @@ function stopDrag() {
 }
 
 function startDrag(event: PointerEvent) {
-  if (window.matchMedia('(min-width: 640px)').matches) return
   dragStartY.value = event.clientY
   window.addEventListener('pointermove', drag)
   window.addEventListener('pointerup', endDrag)
@@ -71,22 +70,22 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <Transition name="modal">
+    <Transition name="sheet">
       <div
         v-if="open"
-        class="fixed inset-0 z-40 grid place-items-end bg-slate-950/40 p-0 sm:place-items-center sm:p-4"
+        class="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/40"
         @click.self="close"
       >
         <section
           role="dialog"
           aria-modal="true"
           :aria-label="title || 'Dialog'"
-          class="modal-sheet flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-xl sm:max-w-xl sm:rounded-3xl"
+          class="app-sheet flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-xl"
           :style="sheetStyle"
         >
           <button
             type="button"
-            class="flex min-h-11 w-full shrink-0 touch-none items-center justify-center sm:hidden"
+            class="flex min-h-11 w-full shrink-0 touch-none items-center justify-center"
             aria-label="Geser ke bawah untuk menutup"
             @pointerdown="startDrag"
           >
@@ -94,7 +93,7 @@ onBeforeUnmount(() => {
           </button>
           <header
             v-if="title"
-            class="mb-4 flex shrink-0 items-center justify-between gap-3 px-4 sm:pt-4"
+            class="mb-4 flex shrink-0 items-center justify-between gap-3 px-4"
           >
             <h2 class="text-lg font-bold">{{ title }}</h2>
             <button
@@ -110,7 +109,7 @@ onBeforeUnmount(() => {
             v-else
             type="button"
             aria-label="Tutup"
-            class="mx-4 mb-4 grid size-10 shrink-0 place-items-center self-end rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 sm:mt-4"
+            class="mx-4 mb-4 grid size-10 shrink-0 place-items-center self-end rounded-xl border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
             @click="close"
           >
             <X :size="18" />

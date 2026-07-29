@@ -71,29 +71,22 @@ textarea {
   }
 }
 
-.modal-enter-active,
-.modal-leave-active {
+.sheet-enter-active,
+.sheet-leave-active {
   transition: opacity 180ms ease;
 }
 
-.modal-enter-active .modal-sheet,
-.modal-leave-active .modal-sheet {
+.sheet-enter-active .app-sheet,
+.sheet-leave-active .app-sheet {
   transition: transform 220ms ease;
 }
 
-.modal-enter-from,
-.modal-leave-to {
+.sheet-enter-from,
+.sheet-leave-to {
   opacity: 0;
 }
 
-.modal-enter-from .modal-sheet,
-.modal-leave-to .modal-sheet {
+.sheet-enter-from .app-sheet,
+.sheet-leave-to .app-sheet {
   transform: translateY(100%);
-}
-
-@media (min-width: 640px) {
-  .modal-enter-from .modal-sheet,
-  .modal-leave-to .modal-sheet {
-    transform: translateY(0.5rem) scale(0.98);
-  }
 }

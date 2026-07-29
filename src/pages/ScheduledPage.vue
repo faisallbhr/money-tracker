@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 
 import AppButton from '@/components/common/AppButton.vue'
 import AppCard from '@/components/common/AppCard.vue'
-import AppModal from '@/components/common/AppModal.vue'
+import AppSheet from '@/components/common/AppSheet.vue'
 import ScheduledForm from '@/components/scheduled/ScheduledForm.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import { formatDateIndonesia, todayDate } from '@/domain/date'
@@ -151,14 +151,14 @@ async function updated() {
         Belum ada transaksi terjadwal.
       </p>
     </template>
-    <AppModal
+    <AppSheet
       :open="showCreate"
       title="Tambah Transaksi Terjadwal"
       @close="showCreate = false"
     >
       <ScheduledForm @saved="created" />
-    </AppModal>
-    <AppModal
+    </AppSheet>
+    <AppSheet
       :open="Boolean(editingSchedule)"
       title="Ubah Transaksi Terjadwal"
       @close="editingSchedule = null"
@@ -168,6 +168,6 @@ async function updated() {
         :schedule="editingSchedule"
         @saved="updated"
       />
-    </AppModal>
+    </AppSheet>
   </section>
 </template>
