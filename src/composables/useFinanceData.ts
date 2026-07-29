@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 
 import { listAccounts } from '@/repositories/accounts'
 import { listCategories } from '@/repositories/categories'
@@ -20,8 +20,10 @@ export function useFinanceData() {
   const categories = ref<Category[]>([])
   const schedules = ref<ScheduledTransaction[]>([])
   const loading = ref(false)
+  let lastFilter: TransactionFilter = {}
 
   async function load(filter: TransactionFilter = {}) {
+    lastFilter = filter
     loading.value = true
     try {
       const [nextAccounts, nextTransactions, nextCategories, nextSchedules] =
@@ -39,6 +41,15 @@ export function useFinanceData() {
       loading.value = false
     }
   }
+
+  function reload() {
+    void load(lastFilter)
+  }
+
+  window.addEventListener('finance-data-changed', reload)
+  onBeforeUnmount(() => {
+    window.removeEventListener('finance-data-changed', reload)
+  })
 
   return {
     accounts,

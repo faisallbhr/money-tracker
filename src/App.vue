@@ -55,6 +55,11 @@ function closeAddMenu() {
   addType.value = null
 }
 
+function transactionSaved() {
+  window.dispatchEvent(new Event('finance-data-changed'))
+  closeAddMenu()
+}
+
 function closePwaPrompt() {
   offlineReady.value = false
   needRefresh.value = false
@@ -130,7 +135,11 @@ function isNavActive(to: string) {
           >Transfer</AppButton
         >
       </div>
-      <TransactionForm v-if="addType" :type="addType" @saved="closeAddMenu" />
+      <TransactionForm
+        v-if="addType"
+        :type="addType"
+        @saved="transactionSaved"
+      />
     </AppSheet>
 
     <div
