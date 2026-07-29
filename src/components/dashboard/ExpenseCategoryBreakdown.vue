@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppCard from '@/components/common/AppCard.vue'
 import { formatMoney } from '@/domain/money'
 import type { ExpenseCategoryPoint } from '@/domain/dashboard/chartData'
 
@@ -6,7 +7,7 @@ defineProps<{ items: readonly ExpenseCategoryPoint[] }>()
 </script>
 
 <template>
-  <section class="soft-card">
+  <AppCard>
     <h2 class="section-title">Pengeluaran per Kategori</h2>
     <p class="section-subtitle">Lima kategori terbesar bulan ini</p>
 
@@ -30,5 +31,5 @@ defineProps<{ items: readonly ExpenseCategoryPoint[] }>()
       </div>
     </div>
     <p v-else class="empty-state">Belum ada pengeluaran bulan ini.</p>
-  </section>
+  </AppCard>
 </template>

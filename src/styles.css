@@ -46,10 +46,6 @@ textarea {
       linear-gradient(180deg, #fbf7f0 0%, #f8fafc 48%, #f6f3ee 100%);
   }
 
-  .soft-card {
-    @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 sm:p-5;
-  }
-
   .section-title {
     @apply text-base font-bold text-slate-950;
   }

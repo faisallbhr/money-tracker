@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 
 import AppButton from '@/components/common/AppButton.vue'
+import AppCard from '@/components/common/AppCard.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
 import { APP_VERSION } from '@/config/app'
@@ -61,7 +62,7 @@ async function resetData() {
       dibersihkan.
     </p>
 
-    <form class="soft-card grid gap-4" @submit.prevent="save">
+    <AppCard tag="form" class="grid gap-4" @submit.prevent="save">
       <AppSelect
         v-model="settings.settings.firstDayOfWeek"
         label="Awal Minggu"
@@ -81,9 +82,9 @@ async function resetData() {
       <AppButton type="submit" :disabled="saving">
         {{ saving ? 'Menyimpan...' : 'Simpan' }}
       </AppButton>
-    </form>
+    </AppCard>
 
-    <section class="soft-card">
+    <AppCard>
       <h3 class="font-bold text-rose-800">Reset Semua Data</h3>
       <p class="mt-1 text-sm text-slate-500">
         Ketik RESET untuk menghapus Akun, Transaksi, Kategori, Transaksi
@@ -99,7 +100,7 @@ async function resetData() {
           >{{ resetting ? 'Mereset...' : 'Reset' }}</AppButton
         >
       </div>
-    </section>
+    </AppCard>
 
     <p class="text-center text-xs text-slate-500">Versi {{ APP_VERSION }}</p>
   </section>

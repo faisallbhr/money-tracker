@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Landmark, WalletCards } from 'lucide-vue-next'
 
+import AppCard from '@/components/common/AppCard.vue'
 import { formatMoney } from '@/domain/money'
 import type { Account } from '@/types/models'
 import { accountTypeLabel } from '@/utils/labels'
@@ -22,11 +23,12 @@ defineProps<{
       v-if="items.length"
       class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none]"
     >
-      <RouterLink
+      <AppCard
         v-for="item in items"
         :key="item.account.id"
+        tag="RouterLink"
         :to="`/accounts/${item.account.id}`"
-        class="min-w-52 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition active:scale-[0.99]"
+        class="min-w-52 transition active:scale-[0.99]"
       >
         <div class="mb-3 flex items-center gap-2">
           <span
@@ -52,7 +54,7 @@ defineProps<{
         <p class="text-lg font-bold tracking-tight">
           {{ formatMoney(item.balanceMinor) }}
         </p>
-      </RouterLink>
+      </AppCard>
     </div>
     <p v-else class="empty-state">
       Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.

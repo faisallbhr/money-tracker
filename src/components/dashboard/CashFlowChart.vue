@@ -11,6 +11,7 @@ import {
 import { computed } from 'vue'
 import { Bar } from 'vue-chartjs'
 
+import AppCard from '@/components/common/AppCard.vue'
 import { formatMoney } from '@/domain/money'
 import type { CashFlowPoint } from '@/domain/dashboard/chartData'
 
@@ -82,7 +83,7 @@ const chartOptions: ChartOptions<'bar'> = {
 </script>
 
 <template>
-  <section class="soft-card">
+  <AppCard>
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
         <h2 class="section-title">Pergerakan Saldo</h2>
@@ -107,5 +108,5 @@ const chartOptions: ChartOptions<'bar'> = {
     <p v-else class="empty-state">
       Belum ada transaksi bulan ini untuk ditampilkan pada grafik.
     </p>
-  </section>
+  </AppCard>
 </template>

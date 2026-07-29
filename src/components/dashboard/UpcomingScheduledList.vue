@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CalendarClock } from 'lucide-vue-next'
 
+import AppCard from '@/components/common/AppCard.vue'
 import { formatMoney } from '@/domain/money'
 import type { ScheduledTransaction } from '@/types/models'
 import { behaviorLabel, frequencyLabel } from '@/utils/labels'
@@ -9,7 +10,7 @@ defineProps<{ schedules: readonly ScheduledTransaction[] }>()
 </script>
 
 <template>
-  <section class="soft-card">
+  <AppCard>
     <div class="mb-3 flex items-center justify-between">
       <h2 class="section-title">Transaksi Terjadwal</h2>
       <RouterLink to="/scheduled" class="text-sm font-medium text-teal-700"
@@ -41,5 +42,5 @@ defineProps<{ schedules: readonly ScheduledTransaction[] }>()
       </RouterLink>
     </div>
     <p v-else class="empty-state">Belum ada transaksi terjadwal.</p>
-  </section>
+  </AppCard>
 </template>

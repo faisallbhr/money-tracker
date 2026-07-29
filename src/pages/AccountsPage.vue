@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 
 import AccountForm from '@/components/accounts/AccountForm.vue'
 import AppButton from '@/components/common/AppButton.vue'
+import AppCard from '@/components/common/AppCard.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import type { Account } from '@/types/models'
@@ -41,10 +42,10 @@ async function updated() {
     <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
 
     <template v-else>
-      <article
+      <AppCard
         v-for="account in data.accounts.value"
         :key="account.id"
-        class="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
+        tag="article"
       >
         <div class="flex items-center gap-3">
           <RouterLink
@@ -74,7 +75,7 @@ async function updated() {
             ><Pencil :size="16"
           /></AppButton>
         </div>
-      </article>
+      </AppCard>
 
       <p v-if="!data.accounts.value.length" class="empty-state">
         Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.

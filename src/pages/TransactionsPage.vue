@@ -3,6 +3,7 @@ import { SlidersHorizontal } from 'lucide-vue-next'
 import { computed, onMounted, reactive, ref } from 'vue'
 
 import AppButton from '@/components/common/AppButton.vue'
+import AppCard from '@/components/common/AppCard.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
@@ -65,7 +66,7 @@ onMounted(load)
       @keyup.enter="load"
     />
 
-    <section class="soft-card">
+    <AppCard>
       <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
       <template v-else>
         <TransactionListItem
@@ -82,7 +83,7 @@ onMounted(load)
       >
         Tidak ada transaksi yang cocok.
       </p>
-    </section>
+    </AppCard>
 
     <AppModal
       :open="showFilters"

@@ -9,6 +9,7 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 
+import AppCard from '@/components/common/AppCard.vue'
 import CashFlowChart from '@/components/dashboard/CashFlowChart.vue'
 import ExpenseCategoryBreakdown from '@/components/dashboard/ExpenseCategoryBreakdown.vue'
 import UpcomingScheduledList from '@/components/dashboard/UpcomingScheduledList.vue'
@@ -138,7 +139,7 @@ const upcomingSchedules = computed(() =>
       <CashFlowChart :series="cashFlowSeries" />
       <ExpenseCategoryBreakdown :items="expenseCategories" />
 
-      <section class="soft-card">
+      <AppCard>
         <div class="mb-3 flex items-center justify-between">
           <h2 class="section-title">Transaksi Terbaru</h2>
           <RouterLink
@@ -157,7 +158,7 @@ const upcomingSchedules = computed(() =>
         <p v-if="!recentTransactions.length" class="empty-state">
           Belum ada transaksi.
         </p>
-      </section>
+      </AppCard>
 
       <UpcomingScheduledList :schedules="upcomingSchedules" />
     </template>
