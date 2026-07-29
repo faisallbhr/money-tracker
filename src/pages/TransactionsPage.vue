@@ -4,6 +4,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 
 import AppButton from '@/components/common/AppButton.vue'
 import AppCard from '@/components/common/AppCard.vue'
+import AppDateTimeInput from '@/components/common/AppDateTimeInput.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
@@ -113,15 +114,13 @@ onMounted(load)
           :options="categoryOptions"
         />
         <div class="grid gap-4 sm:grid-cols-2">
-          <AppInput
+          <AppDateTimeInput
             v-model="filters.startDate"
-            label="Dari Tanggal"
-            type="date"
+            label="Dari Tanggal & Waktu"
           />
-          <AppInput
+          <AppDateTimeInput
             v-model="filters.endDate"
-            label="Sampai Tanggal"
-            type="date"
+            label="Sampai Tanggal & Waktu"
           />
         </div>
         <AppButton type="submit" :disabled="data.loading.value">

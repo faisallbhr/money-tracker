@@ -13,14 +13,24 @@ export interface TransactionFilter {
   limit?: number
 }
 
+function filterStart(value?: string) {
+  if (!value) return '0000-01-01'
+  return value.length === 10 ? `${value} 00:00:00` : value
+}
+
+function filterEnd(value?: string) {
+  if (!value) return '9999-12-31'
+  return value.length === 10 ? `${value} 23:59:59` : value
+}
+
 export async function listTransactions(filter: TransactionFilter = {}) {
   const base =
     filter.startDate || filter.endDate
       ? await db.transactions
           .where('transactionDate')
           .between(
-            filter.startDate || '0000-01-01',
-            filter.endDate ? `${filter.endDate} 23:59:59` : '9999-12-31',
+            filterStart(filter.startDate),
+            filterEnd(filter.endDate),
             true,
             true,
           )
