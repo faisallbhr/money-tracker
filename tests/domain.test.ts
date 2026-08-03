@@ -4,7 +4,6 @@ import {
   calculateAccountBalance,
   calculateTotalBalance,
 } from '@/domain/balance/balance'
-import { getTopExpenseCategories } from '@/domain/dashboard/chartData'
 import {
   fromDateTimeLocalInput,
   formatTransactionDateTimeInput,
@@ -22,12 +21,7 @@ import {
   withNetCashFlow,
   summarizeIncomeExpense,
 } from '@/domain/transactions/summary'
-import type {
-  Account,
-  Category,
-  ScheduledTransaction,
-  Transaction,
-} from '@/types/models'
+import type { Account, ScheduledTransaction, Transaction } from '@/types/models'
 
 const account = (id: string, initialBalanceMinor = 0): Account => ({
   id,
@@ -66,16 +60,6 @@ const schedule = (
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
   ...input,
-})
-
-const category = (id: string, name: string): Category => ({
-  id,
-  name,
-  type: 'expense',
-  isDefault: false,
-  isArchived: false,
-  createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
 })
 
 describe('balance rules', () => {
@@ -219,48 +203,5 @@ describe('scheduled transactions', () => {
         '2026-02-28',
       ).transactionDate,
     ).toBe('2026-02-28 08:30:15')
-  })
-})
-
-describe('dashboard chart aggregation', () => {
-  it('returns top expense categories and groups the rest as Lainnya', () => {
-    const breakdown = getTopExpenseCategories(
-      [
-        transaction({
-          type: 'expense',
-          accountId: 'bank',
-          categoryId: 'food',
-          amountMinor: 300_00,
-          transactionDate: '2026-07-03',
-        }),
-        transaction({
-          type: 'expense',
-          accountId: 'bank',
-          categoryId: 'transport',
-          amountMinor: 200_00,
-          transactionDate: '2026-07-04',
-        }),
-        transaction({
-          type: 'expense',
-          accountId: 'bank',
-          categoryId: 'bills',
-          amountMinor: 100_00,
-          transactionDate: '2026-07-05',
-        }),
-      ],
-      [
-        category('food', 'Makanan'),
-        category('transport', 'Transportasi'),
-        category('bills', 'Tagihan'),
-      ],
-      new Date('2026-07-10T00:00:00'),
-      2,
-    )
-
-    expect(breakdown.map((item) => [item.name, item.amountMinor])).toEqual([
-      ['Makanan', 300_00],
-      ['Transportasi', 200_00],
-      ['Lainnya', 100_00],
-    ])
   })
 })

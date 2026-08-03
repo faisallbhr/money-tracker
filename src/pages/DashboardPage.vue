@@ -10,14 +10,12 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 
 import AppCard from '@/components/common/AppCard.vue'
-import ExpenseCategoryBreakdown from '@/components/dashboard/ExpenseCategoryBreakdown.vue'
 import UpcomingScheduledList from '@/components/dashboard/UpcomingScheduledList.vue'
 import TransactionDetailModal from '@/components/transactions/TransactionDetailModal.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
 import { calculateTotalBalance } from '@/domain/balance/balance'
 import { formatMonthIndonesia, transactionDateOnly } from '@/domain/date'
-import { getTopExpenseCategories } from '@/domain/dashboard/chartData'
 import { formatMoney } from '@/domain/money'
 import {
   summarizeIncomeExpense,
@@ -31,7 +29,6 @@ const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
 const selectedTransaction = ref<Transaction | null>(null)
 const now = new Date()
 const dashboardLimit = 5
-const reportMonth = format(now, 'yyyy-MM')
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
 const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
@@ -47,14 +44,6 @@ const totalBalance = computed(() =>
 const summary = computed(() =>
   withNetCashFlow(
     summarizeIncomeExpense(data.transactions.value, monthStart, monthEnd),
-  ),
-)
-const expenseCategories = computed(() =>
-  getTopExpenseCategories(
-    data.transactions.value,
-    data.categories.value,
-    now,
-    dashboardLimit - 1,
   ),
 )
 const recentTransactions = computed(() =>
@@ -131,11 +120,6 @@ const upcomingSchedules = computed(() =>
           </div>
         </div>
       </section>
-
-      <ExpenseCategoryBreakdown
-        :items="expenseCategories"
-        :to="`/reports?month=${reportMonth}`"
-      />
 
       <AppCard>
         <div class="mb-3 flex items-center justify-between">
