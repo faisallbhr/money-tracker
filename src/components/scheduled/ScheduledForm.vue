@@ -30,6 +30,37 @@ const accounts = ref<Account[]>([])
 const errors = ref<Record<string, string>>({})
 const loading = ref(true)
 const saving = ref(false)
+const initialStartDate =
+  parseTransactionDateTimeInput(props.schedule?.startDate || '') ||
+  nowDateTime()
+const weekDayOptions = [
+  { label: 'Senin', value: 1 },
+  { label: 'Selasa', value: 2 },
+  { label: 'Rabu', value: 3 },
+  { label: 'Kamis', value: 4 },
+  { label: 'Jumat', value: 5 },
+  { label: 'Sabtu', value: 6 },
+  { label: 'Minggu', value: 0 },
+]
+const monthOptions = [
+  { label: 'Januari', value: 1 },
+  { label: 'Februari', value: 2 },
+  { label: 'Maret', value: 3 },
+  { label: 'April', value: 4 },
+  { label: 'Mei', value: 5 },
+  { label: 'Juni', value: 6 },
+  { label: 'Juli', value: 7 },
+  { label: 'Agustus', value: 8 },
+  { label: 'September', value: 9 },
+  { label: 'Oktober', value: 10 },
+  { label: 'November', value: 11 },
+  { label: 'Desember', value: 12 },
+]
+
+function dayOfWeek(value: string) {
+  return new Date(`${value.slice(0, 10)}T00:00:00`).getDay()
+}
+
 const form = reactive({
   name: props.schedule?.name || '',
   type: props.schedule?.type || 'expense',
@@ -41,10 +72,13 @@ const form = reactive({
   note: props.schedule?.note || '',
   frequency: props.schedule?.frequency || 'monthly',
   interval: props.schedule?.interval || 1,
-  dayOfMonth: props.schedule?.dayOfMonth || new Date().getDate(),
-  startDate:
-    parseTransactionDateTimeInput(props.schedule?.startDate || '') ||
-    nowDateTime(),
+  dayOfWeek: props.schedule?.dayOfWeek ?? dayOfWeek(initialStartDate),
+  dayOfMonth:
+    props.schedule?.dayOfMonth || Number(initialStartDate.slice(8, 10)),
+  monthOfYear:
+    props.schedule?.monthOfYear || Number(initialStartDate.slice(5, 7)),
+  startDate: initialStartDate,
+  endMode: props.schedule?.endDate ? 'date' : 'never',
   endDate: props.schedule?.endDate
     ? parseTransactionDateTimeInput(props.schedule.endDate) || ''
     : '',
@@ -78,6 +112,8 @@ async function submit() {
   if (loading.value || saving.value) return
   errors.value = {}
   const categoryName = form.categoryName.trim()
+  const startDate =
+    parseTransactionDateTimeInput(form.startDate) || form.startDate
   const parsed = scheduledTransactionSchema.safeParse({
     name: form.name,
     type: form.type,
@@ -88,11 +124,16 @@ async function submit() {
     note: form.note || undefined,
     frequency: form.frequency,
     interval: Number(form.interval),
-    dayOfMonth: Number(form.dayOfMonth),
-    startDate: parseTransactionDateTimeInput(form.startDate) || form.startDate,
-    endDate: form.endDate
-      ? parseTransactionDateTimeInput(form.endDate) || form.endDate
-      : undefined,
+    dayOfWeek: form.frequency === 'weekly' ? Number(form.dayOfWeek) : undefined,
+    dayOfMonth:
+      form.frequency !== 'weekly' ? Number(form.dayOfMonth) : undefined,
+    monthOfYear:
+      form.frequency === 'yearly' ? Number(form.monthOfYear) : undefined,
+    startDate,
+    endDate:
+      form.endMode === 'date' && form.endDate
+        ? parseTransactionDateTimeInput(form.endDate) || form.endDate
+        : undefined,
     behavior: form.behavior,
   })
   if (!parsed.success) {
@@ -171,14 +212,6 @@ async function submit() {
         format="money"
         :error="errors.amountMinor"
       />
-      <div class="grid gap-4 sm:grid-cols-2">
-        <AppDateTimeInput v-model="form.startDate" label="Mulai" />
-        <AppInput
-          v-model="form.dayOfMonth"
-          label="Tanggal Bulanan"
-          type="number"
-        />
-      </div>
       <AppSelect
         v-model="form.frequency"
         label="Frekuensi"
@@ -188,6 +221,32 @@ async function submit() {
           { label: 'Tahunan', value: 'yearly' },
         ]"
       />
+      <div class="grid gap-4 sm:grid-cols-2">
+        <AppDateTimeInput
+          v-model="form.startDate"
+          label="Tanggal Mulai"
+        />
+        <AppSelect
+          v-if="form.frequency === 'weekly'"
+          v-model="form.dayOfWeek"
+          label="Hari"
+          :options="weekDayOptions"
+        />
+        <AppInput
+          v-else
+          v-model="form.dayOfMonth"
+          :label="
+            form.frequency === 'yearly' ? 'Tanggal Tahunan' : 'Tanggal Bulanan'
+          "
+          type="number"
+        />
+        <AppSelect
+          v-if="form.frequency === 'yearly'"
+          v-model="form.monthOfYear"
+          label="Bulan"
+          :options="monthOptions"
+        />
+      </div>
       <AppSelect
         v-model="form.behavior"
         label="Perilaku"
@@ -195,6 +254,20 @@ async function submit() {
           { label: 'Otomatis', value: 'automatic' },
           { label: 'Konfirmasi', value: 'confirmation' },
         ]"
+      />
+      <AppSelect
+        v-model="form.endMode"
+        label="Berakhir"
+        :options="[
+          { label: 'Tidak pernah', value: 'never' },
+          { label: 'Pada tanggal tertentu', value: 'date' },
+        ]"
+      />
+      <AppDateTimeInput
+        v-if="form.endMode === 'date'"
+        v-model="form.endDate"
+        label="Tanggal Berakhir"
+        :error="errors.endDate"
       />
       <CategorySelect
         v-if="form.type !== 'transfer'"

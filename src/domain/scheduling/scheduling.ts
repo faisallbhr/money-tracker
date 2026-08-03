@@ -1,4 +1,4 @@
-import { isAfter, isBefore } from 'date-fns'
+import { isAfter, isBefore, setDay } from 'date-fns'
 
 import {
   clampDayOfMonth,
@@ -18,7 +18,9 @@ export function scheduledOccurrenceKey(
 }
 
 function alignOccurrence(schedule: ScheduledTransaction, date: Date) {
-  if (schedule.frequency === 'weekly') return date
+  if (schedule.frequency === 'weekly') {
+    return setDay(date, schedule.dayOfWeek ?? date.getDay())
+  }
   if (schedule.frequency === 'monthly') {
     // Business rule: dates past the end of a month run on that month's last day.
     return clampDayOfMonth(date, schedule.dayOfMonth ?? date.getDate())

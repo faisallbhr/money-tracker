@@ -204,4 +204,17 @@ describe('scheduled transactions', () => {
       ).transactionDate,
     ).toBe('2026-02-28 08:30:15')
   })
+
+  it('aligns weekly schedules to the selected day', () => {
+    expect(
+      getDueOccurrenceDates(
+        schedule({
+          frequency: 'weekly',
+          dayOfWeek: 4,
+          startDate: '2026-07-06 08:00:00',
+        }),
+        '2026-07-16',
+      ),
+    ).toEqual(['2026-07-09', '2026-07-16'])
+  })
 })
