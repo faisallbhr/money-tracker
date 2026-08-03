@@ -63,6 +63,11 @@ function select(value: string | number) {
   emit('update:modelValue', String(value))
 }
 
+function clear() {
+  search.value = ''
+  emit('update:modelValue', '')
+}
+
 function create() {
   select(search.value.trim())
 }
@@ -93,10 +98,12 @@ watch(
     :create-label="createLabel"
     :loading="loading"
     :has-more="hasMore"
+    clearable
     @update:model-value="select"
     @search="updateSearch"
     @open="load()"
     @load-more="load(categories.length)"
     @create="create"
+    @clear="clear"
   />
 </template>

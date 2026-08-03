@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, ChevronDown, Plus } from 'lucide-vue-next'
+import { Check, ChevronDown, Plus, X } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 
 type SelectValue = string | number
@@ -15,6 +15,7 @@ const props = defineProps<{
   createLabel?: string
   loading?: boolean
   hasMore?: boolean
+  clearable?: boolean
 }>()
 const emit = defineEmits<{
   'update:modelValue': [value: SelectValue]
@@ -22,6 +23,7 @@ const emit = defineEmits<{
   open: []
   loadMore: []
   create: []
+  clear: []
 }>()
 const root = ref<HTMLElement | null>(null)
 const dropdown = ref<HTMLElement | null>(null)
@@ -47,6 +49,11 @@ function select(value: string | number) {
 
 function create() {
   emit('create')
+  close()
+}
+
+function clear() {
+  emit('clear')
   close()
 }
 
@@ -128,7 +135,7 @@ onBeforeUnmount(close)
         v-if="searchable"
         :value="searchValue"
         :placeholder="placeholder || placeholderOption?.label || 'Pilih'"
-        class="min-h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        class="min-h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-16 text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
         @focus="openOptions"
         @input="updateSearch(($event.target as HTMLInputElement).value)"
       />
@@ -147,9 +154,18 @@ onBeforeUnmount(close)
           'Pilih'
         }}
       </button>
+      <button
+        v-if="clearable && hasValue"
+        type="button"
+        class="absolute right-9 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-500 hover:cursor-pointer"
+        aria-label="Hapus pilihan"
+        @click.stop="clear"
+      >
+        <X :size="16" />
+      </button>
       <ChevronDown
         :size="18"
-        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:cursor-pointer"
       />
     </span>
     <span v-if="error" class="text-xs text-rose-700">{{ error }}</span>

@@ -53,7 +53,7 @@ function openPicker() {
       </div>
       <Calendar
         :size="18"
-        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-700"
+        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
       />
     </div>
     <span v-if="error" class="text-xs text-rose-700">{{ error }}</span>
