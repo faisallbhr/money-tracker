@@ -153,12 +153,12 @@ function monthLabel(month: string) {
 function openMonth(month: string) {
   selectedMonth.value = month
   selectedCategoryId.value = ''
-  void router.replace({ name: 'reports', query: { month } })
+  void router.push({ name: 'reports', query: { month } })
 }
 
 function openCategory(categoryId: string) {
   selectedCategoryId.value = categoryId
-  void router.replace({
+  void router.push({
     name: 'reports',
     query: { month: selectedMonth.value, category: categoryId },
   })
