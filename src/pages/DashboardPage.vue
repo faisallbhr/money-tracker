@@ -26,13 +26,13 @@ import {
   summarizeIncomeExpense,
   withNetCashFlow,
 } from '@/domain/transactions/summary'
-import type { Transaction } from '@/types/models'
+import type { CategoryType, Transaction } from '@/types/models'
 
 const data = useFinanceData()
 const showBalanceKey = 'money-tracker-show-balance'
 const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
 const selectedTransaction = ref<Transaction | null>(null)
-const dashboardMode = ref<'expense' | 'income'>('expense')
+const dashboardMode = ref<CategoryType>('expense')
 const now = new Date()
 const dashboardLimit = 5
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
@@ -53,7 +53,7 @@ const summary = computed(() =>
   ),
 )
 const dailySeries = computed<ReportLineSeries[]>(() => {
-  const totals = new Map<'income' | 'expense', Map<string, number>>([
+  const totals = new Map<CategoryType, Map<string, number>>([
     ['income', new Map()],
     ['expense', new Map()],
   ])
@@ -65,7 +65,7 @@ const dailySeries = computed<ReportLineSeries[]>(() => {
     const modeTotals = totals.get(transaction.type)!
     modeTotals.set(date, (modeTotals.get(date) || 0) + transaction.amountMinor)
   }
-  const points = (type: 'income' | 'expense'): ReportLinePoint[] =>
+  const points = (type: CategoryType): ReportLinePoint[] =>
     Array.from({ length: getDaysInMonth(now) }, (_, index) => {
       const day = `${monthStart.slice(0, 7)}-${String(index + 1).padStart(2, '0')}`
       return {

@@ -15,11 +15,11 @@ import TransactionListItem from '@/components/transactions/TransactionListItem.v
 import { useFinanceData } from '@/composables/useFinanceData'
 import { formatMonthIndonesia, transactionDateOnly } from '@/domain/date'
 import { formatMoney } from '@/domain/money'
-import type { Transaction } from '@/types/models'
+import type { CategoryType, Transaction } from '@/types/models'
 
 interface CategoryReport {
   id: string
-  type: 'income' | 'expense'
+  type: CategoryType
   name: string
   amountMinor: number
   transactions: Transaction[]
@@ -31,7 +31,7 @@ const router = useRouter()
 const selectedMonth = ref(
   typeof route.query.month === 'string' ? route.query.month : '',
 )
-const reportMode = ref<'expense' | 'income'>('expense')
+const reportMode = ref<CategoryType>('expense')
 const selectedCategoryId = ref(
   typeof route.query.category === 'string' ? route.query.category : '',
 )
