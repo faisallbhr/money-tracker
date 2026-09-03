@@ -7,7 +7,7 @@ import {
   ReceiptText,
 } from 'lucide-vue-next'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 import AppButton from '@/components/common/AppButton.vue'
@@ -21,7 +21,14 @@ const toast = useToastStore()
 const route = useRoute()
 const showAddMenu = ref(false)
 const addType = ref<'income' | 'expense' | 'transfer' | null>(null)
-const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
+let swRegistration: ServiceWorkerRegistration | undefined
+let appUpdateTimer: number | undefined
+const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
+  onRegisteredSW(_scriptUrl, registration) {
+    swRegistration = registration
+    if (navigator.onLine) void registration?.update()
+  },
+})
 const addSheetTitle = computed(() => {
   if (addType.value === 'expense') return 'Tambah Pengeluaran'
   if (addType.value === 'income') return 'Tambah Pemasukan'
@@ -68,6 +75,22 @@ function closePwaPrompt() {
 function isNavActive(to: string) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
+
+function checkForAppUpdate() {
+  if (document.visibilityState !== 'visible') return
+  if (!navigator.onLine) return
+  void swRegistration?.update()
+}
+
+onMounted(() => {
+  document.addEventListener('visibilitychange', checkForAppUpdate)
+  appUpdateTimer = window.setInterval(checkForAppUpdate, 60 * 60 * 1000)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', checkForAppUpdate)
+  if (appUpdateTimer) window.clearInterval(appUpdateTimer)
+})
 </script>
 
 <template>
