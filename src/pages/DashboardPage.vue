@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { endOfMonth, format, startOfMonth } from 'date-fns'
+import { endOfMonth, format, getDaysInMonth, startOfMonth } from 'date-fns'
 import {
   Eye,
   EyeOff,
@@ -11,6 +11,10 @@ import { computed, onMounted, ref, watch } from 'vue'
 
 import AppCard from '@/components/common/AppCard.vue'
 import UpcomingScheduledList from '@/components/dashboard/UpcomingScheduledList.vue'
+import ReportLineChart, {
+  type ReportLinePoint,
+  type ReportLineSeries,
+} from '@/components/reports/ReportLineChart.vue'
 import TransactionDetailModal from '@/components/transactions/TransactionDetailModal.vue'
 import TransactionListItem from '@/components/transactions/TransactionListItem.vue'
 import { useFinanceData } from '@/composables/useFinanceData'
@@ -46,6 +50,32 @@ const summary = computed(() =>
     summarizeIncomeExpense(data.transactions.value, monthStart, monthEnd),
   ),
 )
+const dailySeries = computed<ReportLineSeries[]>(() => {
+  const totals = new Map<'income' | 'expense', Map<string, number>>([
+    ['income', new Map()],
+    ['expense', new Map()],
+  ])
+  for (const transaction of data.transactions.value) {
+    if (transaction.type !== 'income' && transaction.type !== 'expense')
+      continue
+    const date = transactionDateOnly(transaction.transactionDate)
+    if (!date.startsWith(monthStart.slice(0, 7))) continue
+    const modeTotals = totals.get(transaction.type)!
+    modeTotals.set(date, (modeTotals.get(date) || 0) + transaction.amountMinor)
+  }
+  const points = (type: 'income' | 'expense'): ReportLinePoint[] =>
+    Array.from({ length: getDaysInMonth(now) }, (_, index) => {
+      const day = `${monthStart.slice(0, 7)}-${String(index + 1).padStart(2, '0')}`
+      return {
+        label: format(new Date(`${day}T00:00:00`), 'd'),
+        amountMinor: totals.get(type)!.get(day) || 0,
+      }
+    })
+  return [
+    { label: 'Pemasukan', color: '#059669', points: points('income') },
+    { label: 'Pengeluaran', color: '#e11d48', points: points('expense') },
+  ]
+})
 const recentTransactions = computed(() =>
   data.transactions.value.slice(0, dashboardLimit),
 )
@@ -120,6 +150,11 @@ const upcomingSchedules = computed(() =>
           </div>
         </div>
       </section>
+
+      <AppCard>
+        <h2 class="section-title mb-3">Pemasukan & Pengeluaran</h2>
+        <ReportLineChart :series="dailySeries" />
+      </AppCard>
 
       <AppCard>
         <div class="mb-3 flex items-center justify-between">

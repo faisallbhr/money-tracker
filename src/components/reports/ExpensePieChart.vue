@@ -58,7 +58,7 @@ const chartOptions: ChartOptions<'pie'> = {
 </script>
 
 <template>
-  <div v-if="hasData" class="h-64" aria-label="Grafik kategori pengeluaran">
+  <div v-if="hasData" class="h-64" aria-label="Grafik kategori laporan">
     <Pie :data="chartData" :options="chartOptions" />
   </div>
   <p v-else class="empty-state">
