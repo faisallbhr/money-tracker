@@ -42,11 +42,15 @@ const chartData = computed<ChartData<'line'>>(() => ({
     backgroundColor: series.color,
     tension: 0.25,
     fill: false,
+    pointRadius: 3,
+    pointHitRadius: 14,
+    pointHoverRadius: 5,
   })),
 }))
 const chartOptions = computed<ChartOptions<'line'>>(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
   plugins: {
     legend: { display: props.series.length > 1 },
     tooltip: {
