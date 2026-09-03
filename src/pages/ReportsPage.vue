@@ -183,7 +183,7 @@ onMounted(() => data.load())
         <h2 class="text-2xl font-extrabold tracking-tight">Laporan</h2>
       </div>
       <button
-        v-if="selectedMonth"
+        v-if="selectedMonth && !selectedCategory"
         type="button"
         class="grid size-10 place-items-center rounded-xl bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50"
         :aria-label="
