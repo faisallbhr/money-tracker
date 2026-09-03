@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { endOfMonth, format, getDaysInMonth, startOfMonth } from 'date-fns'
 import {
+  ArrowLeftRight,
   Eye,
   EyeOff,
   Settings,
@@ -31,6 +32,7 @@ const data = useFinanceData()
 const showBalanceKey = 'money-tracker-show-balance'
 const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
 const selectedTransaction = ref<Transaction | null>(null)
+const dashboardMode = ref<'expense' | 'income'>('expense')
 const now = new Date()
 const dashboardLimit = 5
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
@@ -76,6 +78,13 @@ const dailySeries = computed<ReportLineSeries[]>(() => {
     { label: 'Pengeluaran', color: '#e11d48', points: points('expense') },
   ]
 })
+const visibleDailySeries = computed(() =>
+  dailySeries.value.filter((series) =>
+    dashboardMode.value === 'income'
+      ? series.label === 'Pemasukan'
+      : series.label === 'Pengeluaran',
+  ),
+)
 const recentTransactions = computed(() =>
   data.transactions.value.slice(0, dashboardLimit),
 )
@@ -152,8 +161,31 @@ const upcomingSchedules = computed(() =>
       </section>
 
       <AppCard>
-        <h2 class="section-title mb-3">Pemasukan & Pengeluaran</h2>
-        <ReportLineChart :series="dailySeries" />
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="section-title">
+            {{ dashboardMode === 'income' ? 'Pemasukan' : 'Pengeluaran' }}
+          </h2>
+          <button
+            type="button"
+            class="grid size-9 place-items-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"
+            :aria-label="
+              dashboardMode === 'income'
+                ? 'Tampilkan pengeluaran'
+                : 'Tampilkan pemasukan'
+            "
+            :title="
+              dashboardMode === 'income'
+                ? 'Tampilkan pengeluaran'
+                : 'Tampilkan pemasukan'
+            "
+            @click="
+              dashboardMode = dashboardMode === 'income' ? 'expense' : 'income'
+            "
+          >
+            <ArrowLeftRight :size="18" />
+          </button>
+        </div>
+        <ReportLineChart :series="visibleDailySeries" />
       </AppCard>
 
       <AppCard>
