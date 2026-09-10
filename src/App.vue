@@ -2,9 +2,9 @@
 import {
   CalendarClock,
   Home,
-  Landmark,
   Plus,
   ReceiptText,
+  WalletCards,
 } from 'lucide-vue-next'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -39,7 +39,7 @@ const addSheetTitle = computed(() => {
 const navItems = [
   { to: '/', label: 'Beranda', icon: Home },
   { to: '/reports', label: 'Laporan', icon: ReceiptText },
-  { to: '/accounts', label: 'Dompet', icon: Landmark },
+  { to: '/accounts', label: 'Dompet', icon: WalletCards },
   { to: '/scheduled', label: 'Terjadwal', icon: CalendarClock },
 ] as const
 
