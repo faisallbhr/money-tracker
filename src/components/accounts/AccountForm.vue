@@ -43,11 +43,11 @@ async function submit() {
   saving.value = true
   try {
     await saveAccount({ ...parsed.data, id: props.account?.id })
-    toast.show('Akun tersimpan.', 'success')
+    toast.show('Dompet tersimpan.', 'success')
     emit('saved')
   } catch (error) {
     console.error(error)
-    toast.show('Gagal menyimpan akun.', 'error')
+    toast.show('Gagal menyimpan dompet.', 'error')
   } finally {
     saving.value = false
   }
@@ -56,10 +56,10 @@ async function submit() {
 
 <template>
   <form class="grid gap-4" @submit.prevent="submit">
-    <AppInput v-model="form.name" label="Nama Akun" :error="errors.name" />
+    <AppInput v-model="form.name" label="Nama Dompet" :error="errors.name" />
     <AppSelect
       v-model="form.type"
-      label="Jenis Akun"
+      label="Jenis Dompet"
       :options="[
         { label: 'Tunai', value: 'cash' },
         { label: 'Bank', value: 'bank' },

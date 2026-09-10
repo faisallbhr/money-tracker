@@ -14,7 +14,7 @@ const positiveAmount = z
 const optionalText = z.string().trim().optional()
 
 export const accountSchema = z.object({
-  name: z.string().trim().min(1, 'Nama akun wajib diisi.'),
+  name: z.string().trim().min(1, 'Nama dompet wajib diisi.'),
   type: z.enum(accountTypes),
   initialBalanceMinor: z.number().int(),
   icon: optionalText,
@@ -48,19 +48,19 @@ export const transactionFormSchema = z
         context.addIssue({
           code: 'custom',
           path: ['fromAccountId'],
-          message: 'Akun asal wajib diisi.',
+          message: 'Dompet asal wajib diisi.',
         })
       if (!value.toAccountId)
         context.addIssue({
           code: 'custom',
           path: ['toAccountId'],
-          message: 'Akun tujuan wajib diisi.',
+          message: 'Dompet tujuan wajib diisi.',
         })
       if (value.fromAccountId && value.fromAccountId === value.toAccountId) {
         context.addIssue({
           code: 'custom',
           path: ['toAccountId'],
-          message: 'Akun harus berbeda.',
+          message: 'Dompet harus berbeda.',
         })
       }
       return
@@ -69,7 +69,7 @@ export const transactionFormSchema = z
       context.addIssue({
         code: 'custom',
         path: ['accountId'],
-        message: 'Akun wajib diisi.',
+        message: 'Dompet wajib diisi.',
       })
     if (value.type === 'adjustment' && !value.adjustmentDirection) {
       context.addIssue({
@@ -116,19 +116,19 @@ export const scheduledTransactionSchema = z
         context.addIssue({
           code: 'custom',
           path: ['fromAccountId'],
-          message: 'Akun asal wajib diisi.',
+          message: 'Dompet asal wajib diisi.',
         })
       if (!value.toAccountId)
         context.addIssue({
           code: 'custom',
           path: ['toAccountId'],
-          message: 'Akun tujuan wajib diisi.',
+          message: 'Dompet tujuan wajib diisi.',
         })
       if (value.fromAccountId && value.fromAccountId === value.toAccountId) {
         context.addIssue({
           code: 'custom',
           path: ['toAccountId'],
-          message: 'Akun harus berbeda.',
+          message: 'Dompet harus berbeda.',
         })
       }
       return
@@ -137,6 +137,6 @@ export const scheduledTransactionSchema = z
       context.addIssue({
         code: 'custom',
         path: ['accountId'],
-        message: 'Akun wajib diisi.',
+        message: 'Dompet wajib diisi.',
       })
   })

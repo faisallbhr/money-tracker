@@ -6,15 +6,15 @@ export function validateTransactionRules(transaction: Transaction) {
 
   if (transaction.type === 'transfer') {
     if (!transaction.fromAccountId || !transaction.toAccountId) {
-      throw new Error('Transfer membutuhkan akun asal dan akun tujuan.')
+      throw new Error('Transfer membutuhkan dompet asal dan dompet tujuan.')
     }
     if (transaction.fromAccountId === transaction.toAccountId) {
-      throw new Error('Akun transfer harus berbeda.')
+      throw new Error('Dompet transfer harus berbeda.')
     }
     return
   }
 
-  if (!transaction.accountId) throw new Error('Akun wajib diisi.')
+  if (!transaction.accountId) throw new Error('Dompet wajib diisi.')
   if (transaction.type === 'adjustment' && !transaction.adjustmentDirection) {
     throw new Error('Arah Penyesuaian Saldo wajib diisi.')
   }

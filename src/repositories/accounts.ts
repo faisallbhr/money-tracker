@@ -26,7 +26,7 @@ export async function saveAccount(input: {
   const timestamp = nowIso()
   if (input.id) {
     const existing = await db.accounts.get(input.id)
-    if (!existing) throw new Error('Akun tidak ditemukan.')
+    if (!existing) throw new Error('Dompet tidak ditemukan.')
     await db.accounts.update(input.id, { ...input, updatedAt: timestamp })
     return input.id
   }

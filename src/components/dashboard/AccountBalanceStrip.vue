@@ -14,7 +14,7 @@ defineProps<{
 <template>
   <section>
     <div class="mb-3 flex items-center justify-between">
-      <h2 class="section-title">Akun</h2>
+      <h2 class="section-title">Dompet</h2>
       <RouterLink to="/accounts" class="text-sm font-medium text-teal-700"
         >Lihat Semua</RouterLink
       >
@@ -57,7 +57,7 @@ defineProps<{
       </AppCard>
     </div>
     <p v-else class="empty-state">
-      Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.
+      Belum ada dompet. Tambahkan dompet pertama untuk mulai mencatat saldo.
     </p>
   </section>
 </template>

@@ -39,7 +39,7 @@ const addSheetTitle = computed(() => {
 const navItems = [
   { to: '/', label: 'Beranda', icon: Home },
   { to: '/reports', label: 'Laporan', icon: ReceiptText },
-  { to: '/accounts', label: 'Akun', icon: Landmark },
+  { to: '/accounts', label: 'Dompet', icon: Landmark },
   { to: '/scheduled', label: 'Terjadwal', icon: CalendarClock },
 ] as const
 

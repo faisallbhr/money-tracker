@@ -13,7 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{ select: [transaction: Transaction] }>()
 
 const accountName = (id?: string) =>
-  props.accounts.find((account) => account.id === id)?.name || 'Akun hilang'
+  props.accounts.find((account) => account.id === id)?.name || 'Dompet hilang'
 const categoryName = (id?: string) =>
   props.categories.find((category) => category.id === id)?.name
 

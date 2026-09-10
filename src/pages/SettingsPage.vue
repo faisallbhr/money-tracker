@@ -44,7 +44,7 @@ async function resetData() {
     <AppCard>
       <h3 class="font-bold text-rose-800">Reset Semua Data</h3>
       <p class="mt-1 text-sm text-slate-500">
-        Ketik RESET untuk menghapus Akun, Transaksi, Kategori, Transaksi
+        Ketik RESET untuk menghapus Dompet, Transaksi, Kategori, Transaksi
         Terjadwal, dan Pengaturan dari browser ini.
       </p>
       <div class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">

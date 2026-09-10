@@ -12,7 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 
 const accountName = (id?: string) =>
-  props.accounts.find((account) => account.id === id)?.name || 'Akun hilang'
+  props.accounts.find((account) => account.id === id)?.name || 'Dompet hilang'
 const categoryName = (id?: string) =>
   props.categories.find((category) => category.id === id)?.name ||
   'Tanpa kategori'
@@ -79,13 +79,13 @@ function signedAmount(transaction: Transaction) {
         class="grid grid-cols-2 gap-3"
       >
         <div>
-          <dt class="text-xs text-slate-500">Dari Akun</dt>
+          <dt class="text-xs text-slate-500">Dari Dompet</dt>
           <dd class="mt-1 font-semibold">
             {{ accountName(transaction.fromAccountId) }}
           </dd>
         </div>
         <div>
-          <dt class="text-xs text-slate-500">Ke Akun</dt>
+          <dt class="text-xs text-slate-500">Ke Dompet</dt>
           <dd class="mt-1 font-semibold">
             {{ accountName(transaction.toAccountId) }}
           </dd>
@@ -93,7 +93,7 @@ function signedAmount(transaction: Transaction) {
       </div>
 
       <div v-else>
-        <dt class="text-xs text-slate-500">Akun</dt>
+        <dt class="text-xs text-slate-500">Dompet</dt>
         <dd class="mt-1 font-semibold">
           {{ accountName(transaction.accountId) }}
         </dd>

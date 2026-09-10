@@ -31,8 +31,8 @@ async function updated() {
   <section class="grid gap-4">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-sm text-slate-500">Daftar akun tersimpan</p>
-        <h2 class="text-2xl font-extrabold tracking-tight">Akun</h2>
+        <p class="text-sm text-slate-500">Daftar dompet tersimpan</p>
+        <h2 class="text-2xl font-extrabold tracking-tight">Dompet</h2>
       </div>
       <AppButton @click="showCreate = true"
         ><Plus :size="18" />Tambah</AppButton
@@ -70,7 +70,7 @@ async function updated() {
           </RouterLink>
           <AppButton
             variant="ghost"
-            aria-label="Edit akun"
+            aria-label="Edit dompet"
             @click="editingAccount = account"
             ><Pencil :size="16"
           /></AppButton>
@@ -78,20 +78,20 @@ async function updated() {
       </AppCard>
 
       <p v-if="!data.accounts.value.length" class="empty-state">
-        Belum ada akun. Tambahkan akun pertama untuk mulai mencatat saldo.
+        Belum ada dompet. Tambahkan dompet pertama untuk mulai mencatat saldo.
       </p>
     </template>
 
     <AppSheet
       :open="showCreate"
-      title="Tambah Akun"
+      title="Tambah Dompet"
       @close="showCreate = false"
     >
       <AccountForm @saved="created" />
     </AppSheet>
     <AppSheet
       :open="Boolean(editingAccount)"
-      title="Ubah Akun"
+      title="Ubah Dompet"
       @close="editingAccount = null"
     >
       <AccountForm

@@ -39,7 +39,7 @@ const form = reactive({
 })
 
 const accountOptions = computed(() => [
-  { label: 'Pilih Akun', value: '' },
+  { label: 'Pilih Dompet', value: '' },
   ...accounts.value.map((account) => ({
     label: account.name,
     value: account.id,
@@ -141,13 +141,13 @@ async function submit() {
       <div v-if="type === 'transfer'" class="grid gap-4">
         <AppSelect
           v-model="form.fromAccountId"
-          label="Dari Akun"
+          label="Dari Dompet"
           :options="accountOptions"
           :error="errors.fromAccountId"
         />
         <AppSelect
           v-model="form.toAccountId"
-          label="Ke Akun"
+          label="Ke Dompet"
           :options="accountOptions"
           :error="errors.toAccountId"
         />
@@ -155,7 +155,7 @@ async function submit() {
       <AppSelect
         v-else
         v-model="form.accountId"
-        label="Akun"
+        label="Dompet"
         :options="accountOptions"
         :error="errors.accountId"
       />

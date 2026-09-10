@@ -49,7 +49,7 @@ const balance = computed(() =>
         @select="selectedTransaction = $event"
       />
       <p v-if="!data.transactions.value.length" class="empty-state">
-        Belum ada transaksi untuk akun ini.
+        Belum ada transaksi untuk dompet ini.
       </p>
     </AppCard>
     <TransactionDetailModal
