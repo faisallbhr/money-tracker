@@ -1,4 +1,22 @@
 import { db } from '@/database/db'
+import { nowIso } from '@/domain/date'
+
+export async function getSettings() {
+  return {
+    id: 'default' as const,
+    includeSavingsInTotal: true,
+    updatedAt: '',
+    ...(await db.settings.get('default')),
+  }
+}
+
+export async function setIncludeSavingsInTotal(value: boolean) {
+  await db.settings.put({
+    ...(await getSettings()),
+    includeSavingsInTotal: value,
+    updatedAt: nowIso(),
+  })
+}
 
 export async function resetAllData() {
   await db.transaction(

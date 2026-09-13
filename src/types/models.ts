@@ -87,6 +87,7 @@ export interface ScheduledTransaction {
 
 export interface Settings {
   id: 'default'
+  includeSavingsInTotal: boolean
   updatedAt: string
 }
 

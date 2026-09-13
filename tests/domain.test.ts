@@ -99,6 +99,14 @@ describe('balance rules', () => {
     expect(calculateAccountBalance(cash, transactions)).toBe(275_00)
     expect(calculateTotalBalance([bank, cash], transactions)).toBe(1_450_00)
   })
+
+  it('can exclude savings from the total balance', () => {
+    const bank = account('bank', 1_000_00)
+    const savings = { ...account('savings', 500_00), type: 'savings' as const }
+
+    expect(calculateTotalBalance([bank, savings], [], false)).toBe(1_000_00)
+    expect(calculateTotalBalance([bank, savings], [])).toBe(1_500_00)
+  })
 })
 
 describe('money input formatting', () => {

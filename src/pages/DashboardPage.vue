@@ -22,6 +22,7 @@ import { useFinanceData } from '@/composables/useFinanceData'
 import { calculateTotalBalance } from '@/domain/balance/balance'
 import { formatMonthIndonesia, transactionDateOnly } from '@/domain/date'
 import { formatMoney } from '@/domain/money'
+import { getSettings } from '@/repositories/settings'
 import {
   summarizeIncomeExpense,
   withNetCashFlow,
@@ -31,6 +32,8 @@ import type { CategoryType, Transaction } from '@/types/models'
 const data = useFinanceData()
 const showBalanceKey = 'money-tracker-show-balance'
 const showBalance = ref(localStorage.getItem(showBalanceKey) !== 'false')
+const includeSavingsInTotal = ref(true)
+const settingsLoaded = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
 const dashboardMode = ref<CategoryType>('expense')
 const now = new Date()
@@ -38,14 +41,22 @@ const dashboardLimit = 5
 const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
 const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
-onMounted(() => data.load())
+onMounted(async () => {
+  const [settings] = await Promise.all([getSettings(), data.load()])
+  includeSavingsInTotal.value = settings.includeSavingsInTotal
+  settingsLoaded.value = true
+})
 
 watch(showBalance, (value) => {
   localStorage.setItem(showBalanceKey, String(value))
 })
 
 const totalBalance = computed(() =>
-  calculateTotalBalance(data.accounts.value, data.transactions.value),
+  calculateTotalBalance(
+    data.accounts.value,
+    data.transactions.value,
+    includeSavingsInTotal.value,
+  ),
 )
 const summary = computed(() =>
   withNetCashFlow(
@@ -118,7 +129,9 @@ const upcomingSchedules = computed(() =>
       </div>
     </div>
 
-    <p v-if="data.loading.value" class="loading-state">Memuat data...</p>
+    <p v-if="data.loading.value || !settingsLoaded" class="loading-state">
+      Memuat data...
+    </p>
 
     <template v-else>
       <section

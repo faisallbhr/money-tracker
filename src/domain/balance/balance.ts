@@ -50,8 +50,12 @@ export function calculateAccountBalances(
 export function calculateTotalBalance(
   accounts: readonly Account[],
   transactions: readonly Transaction[],
+  includeSavings = true,
 ) {
-  return calculateAccountBalances(accounts, transactions).reduce(
+  const includedAccounts = includeSavings
+    ? accounts
+    : accounts.filter((account) => account.type !== 'savings')
+  return calculateAccountBalances(includedAccounts, transactions).reduce(
     (total, item) => total + item.balanceMinor,
     0,
   )
